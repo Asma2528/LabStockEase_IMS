@@ -1,0 +1,142 @@
+// Tut 1
+vite - frontend
+express - backend
+Made 2 directories - frontend and backend
+Inside frontend directory fired commands
+    npm create vite@latest . --template react-js
+        framework - react
+        variant - javascript
+    npm i 
+    Installing some dependencies
+    npm i express cors http-status mongoose dotenv
+        express - to create server
+        cors - to give access to use server (while performing backend accessing processes on frontend)
+        morgan - which request came from which code
+        http-status - to get code 
+        mongoose - to save data, to create connection
+        
+    yarn dev
+        - It is a package manager
+Inside backend directory fired commands
+    npm init -y
+    npm i 
+    changed the 'main:index.js' to 'main:server.js' , 'test:node server.js', 'dev:nodemon server.js'(for automatic server restart) inside package.json 
+    create a file .env to store environmental variables like port number
+    create server.js file and write code in  it
+        server.js - to run the server
+    create src folder and app.js inside this folder and write code in it
+        app.js - to create the server
+    Created constant.js file and write code in it
+    Run command - yarn dev 
+    npm i -g nodemon: to install nodemon package globally
+    Created folders in backend folder
+    controllers - containers controllers which will receive and send requests
+    middleware - to check if token is coming or not, for checking of version is proper or not, uploading images, etc
+    services - actual logic that contains our implementation
+    routes - contains all routes
+    utils - contains utilities such as Api errors
+    validation - contains validation
+    config - for database connectivity
+    Created file db.config.js inside config file
+    Created file index.js inside routes which contains all the main routes and write code in index.js
+    Created file ApiError.js inside utils and write code in it
+    Created file ErrorHandler.js inside middleware and write code in it
+    Created file Auth.route.js inside routes  and write code in it - Auth.route.js is for authentication
+    Created file CatchAsync.js inside utils and write code in it
+// Publishing on Git
+bring .gitignore file to the root directory (LabStockEase)
+fire commands in root directory -
+    git init
+    git add .       //check that no node modules or unnecessary folders are going on git
+    git commit -m "initial commit"
+Create public repo in git (go to gihub site on do it) and upload files in it
+// Tut 2 - Mongoose and jwt token
+Download express validator to check if the data is valid or not (if data is string or not, valid email or not)
+    cd backend
+    npm i express-validator
+Created file Auth.validation.js inside backend/src/validations
+All the validations will be in this file
+Write code in it
+Created file Validation.js inside backend/src/middleware
+Write code in it
+Create models folder inside backend/src
+Created 3 files inside this models folder - user.models.js, index.js and profile.models.js
+Then write code in it
+Created file inside this models folder - Auth.controller.js
+Then write code in it
+Created file inside this models folder - Auth.service.js
+Then write code in it
+Then write code in Auth.route.js
+Download mongodb and mongoose to creating models and for queries and do setup for vs code
+Download jsonwebtoken for token based authentication
+    npm i jsonwebtoken bcryptjs 
+        -it is used for password encryption and decryption and also tells that the password matches
+After that for testing Api
+first run command 'yarn dev' in the backend folder to start the server.
+Then from the right hand side panel - additional view (...) click there and go in collection tab, then create a new collection - IMS
+then create a folder inside IMS - 'auth' - then create a new request 'register user' inside auth.
+Then go to settings of IMS and specify the base url as 'http://localhost:8000/api/v1' (edit and done)
+Go to auth and test- 
+    POST
+    url - /auth/register
+    inside body
+    json - {
+        "name":"john",
+        "email":"john123@gmail.com"
+        "password":"123456"
+    }
+    send request
+Similarly create another request 'login user' and test it
+// tut 3
+Installed react router
+    npm install react-router-dom
+Created new folder pages inside src folder of frontend
+Created files - Home, About, Login, Register inside the pages folder
+Created another folder provider inside src folder 
+Created file Route.jsx inside provider folder 
+Write code in all files
+Install redux for fetching apis, managing states and routes
+    npm install react-redux
+    npm i @reduxjs/toolkit react-icons
+Created file Store.jsx inside provider folder 
+Installing prime react
+    npm insall primereact
+Installed tailwind css
+Installed formik 
+    npm i formik yup
+Installed react pro sidebar
+    npm i react-pro-sidebar
+Outlet tag - React Outlet is a component provided by React Router that serves as a placeholder for child routes within a parent route. It allows for the nesting of routes, enabling developers to create complex navigation structures in their applications.
+
+
+
+//LEFT -
+- check login, registration and logout
+- UI designing
+- basic setup for your categories, items, reports and doing its navigation
+Planned Fields for the Item Model: I have drafted the following fields for the item model:
+item_id: Unique identifier for the item.
+item_name: name of the item.
+company: company/ brand brought
+date_added: Date the item was added to inventory.
+purpose: purpose of the item (if any)
+BillNo: bill no
+total_quantity: total stock level. (Received)
+issued_quantity: how much stock was used (issued)
+current_quantity: current stock (balance)  (I need to calculate)
+min_stock_level: Minimum stock threshold.
+unit_of_measure: Unit of measurement (e.g., pcs, liters).\
+last_updated_date: Date the item was last updated.
+expiration_date: Expiry date for items.
+location: Storage location of the item.
+status: Status (e.g., In Stock, Out of Stock). (I need to calculate)
+description: Additional details about the item.
+barcode: Barcode or QR code data.
+low_stock_alert: Boolean to trigger low-stock alerts.  (I need to calculate)
+expiration_alert_date: Date to trigger expiration alerts.  (I need to calculate)
+
+
+// react google captcha
+- free of cost
+- Heightened Security: Protect your React Native app from bot-driven attacks, spam, and unauthorized access attempts. User Verification: Confirm the identity of users, ensuring genuine interactions and mitigating automated scripts.
+- CAPTCHA helps protect you from spam and password decryption by asking you to complete a simple test that proves you are human and not a computer trying to break into a password protected account.
