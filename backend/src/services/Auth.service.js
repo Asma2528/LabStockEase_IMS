@@ -6,6 +6,7 @@ const { generateToken } = require("../utils/Token.utils")
 
 class AuthService{
     static async RegisterUser(body){
+        
         const {email,password,name} = body
 
         const checkExist = await UserModel.findOne({email})
