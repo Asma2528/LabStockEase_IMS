@@ -29,6 +29,7 @@ class ChemistryValidation {
     static query_page = [
         query('page').optional().isInt({ gt: 0 }).withMessage('Page must be a positive integer')
     ];
+
 }
 
 module.exports = ChemistryValidation;

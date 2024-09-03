@@ -81,8 +81,12 @@ const ChemistryPage = () => {
             </div>
 
             <div className="w-full pt-10">
-                {isLoading || isFetching ? (
-                    <Loader />
+    {isLoading || isFetching ? (
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+            <tbody>
+                <Loader />
+            </tbody>
+        </table>
                 ) : (
                     <div className="relative overflow-x-auto shadow">
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500">

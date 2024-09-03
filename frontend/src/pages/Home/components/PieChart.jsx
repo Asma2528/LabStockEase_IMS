@@ -13,14 +13,14 @@ import { useState, useEffect } from 'react';
                     {
                         data: [540, 325, 702],
                         backgroundColor: [
-                            documentStyle.getPropertyValue('--blue-500'),
-                            documentStyle.getPropertyValue('--yellow-500'),
-                            documentStyle.getPropertyValue('--green-500')
+                            'rgba(255, 99, 132, 0.5)', 
+                            'rgba(169, 222, 249, 0.9)', 
+                            'rgba(179, 162, 213, 0.5)'  
                         ],
                         hoverBackgroundColor: [
-                            documentStyle.getPropertyValue('--blue-400'),
-                            documentStyle.getPropertyValue('--yellow-400'),
-                            documentStyle.getPropertyValue('--green-400')
+                            'rgba(255, 99, 132, 0.6)',  
+                            'rgba(133, 222, 249, 0.9)',  
+                            'rgba(179, 162, 213, 0.7)'   
                         ]
                     }
                 ]

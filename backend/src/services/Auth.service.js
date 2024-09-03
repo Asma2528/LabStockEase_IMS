@@ -1,75 +1,111 @@
-const httpStatus = require("http-status")
-const { UserModel,ProfileModel } = require("../models")
-const ApiError = require("../utils/ApiError")
-const { generateToken } = require("../utils/Token.utils")
+const httpStatus = require("http-status");
+const { UserModel, ProfileModel } = require("../models");
+const ApiError = require("../utils/ApiError");
+const { generateToken } = require("../utils/Token.utils");
 
+const axios = require("axios");
+class AuthService {
+  static async RegisterUser(body) {
+    // request
+    const { email, password, name, token } = body;
 
-class AuthService{
-    static async RegisterUser(body){
-        
-        const {email,password,name} = body
+    // console.log("1---- ",token);
 
-        const checkExist = await UserModel.findOne({email})
-        if(checkExist){
-            throw new ApiError(httpStatus.BAD_REQUEST,"User Already Registered")
-            return
-        }
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      {},
+      {
+        params: {
+          secret: process.env.CAPTCHA_SECRET_KEY,
+          response: token,
+        },
+      }
+    );
 
-    const user =  await UserModel.create({
-            email,password,name
-        })
+    const data = await response.data;
+    // console.log("2---- ",JSON.stringify(data));
 
-        const token = generateToken(user)
-        const refresh_token = generateToken(user,'2d')
-        await ProfileModel.create({
-                    user:user._id,
-                    refresh_token
-        })  
+    if (!data.success) {
 
+      throw new ApiError(httpStatus.BAD_REQUEST, "Captcha Not Valid");
+    }
 
-        return {
-            msg:"User Registered Successfully",
-            token:token
-        }    
+    const checkExist = await UserModel.findOne({ email });
+    if (checkExist) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "User Already Registered");
+      return;
+    }
 
-}
-static  async LoginUser(body){
-const {email,password} = body
+    const user = await UserModel.create({
+      email,
+      password,
+      name,
+    });
 
-        const checkExist = await UserModel.findOne({email})
-        if(!checkExist){
-            throw new ApiError(httpStatus.BAD_REQUEST,"User Not Registered")
-            return
-        }
+    const tokend = generateToken(user);
+    const refresh_token = generateToken(user, "2d");
+    await ProfileModel.create({
+      user: user._id,
+      refresh_token,
+    });
 
-        if(password !==checkExist.password){
-throw new ApiError(httpStatus.UNAUTHORIZED,"Invalid Credentials")
-            return
-        }
+    return {
+      msg: "User Registered Successfully",
+      token: tokend,
+    };
+  }
+  static async LoginUser(body) {
+    const { email, password, token } = body;
 
-const token = generateToken(checkExist) 
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      {},
+      {
+        params: {
+          secret: process.env.CAPTCHA_SECRET_KEY,
+          response: token,
+        },
+      }
+    );
 
-        return {
-            msg:"User Login Successfull",
-            token:token
-        }    
+    const data = await response.data;
+    // console.log("2---- ",JSON.stringify(data));
 
-}
- static  async ProfileService(user){ 
+    if (!data.success) {
+      // console.log("yhhh it works");
 
-              const checkExist = await UserModel.findById(user).select("name email")
-        if(!checkExist){
-            throw new ApiError(httpStatus.BAD_REQUEST,"User Not Registered")
-            return
-        }
+      throw new ApiError(httpStatus.BAD_REQUEST, "Captcha Not Valid");
+    }
+    const checkExist = await UserModel.findOne({ email });
+    if (!checkExist) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "User Not Registered");
+      return;
+    }
 
+    if (password !== checkExist.password) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid Credentials");
+      return;
+    }
 
-        return {
-            msg:"Data fetched",
-            user:checkExist
-        }    
+    const tokend = generateToken(checkExist);
 
-}
+    return {
+      msg: "User Login Successfull",
+      token: tokend,
+    };
+  }
+  static async ProfileService(user) {
+    const checkExist = await UserModel.findById(user).select("name email");
+    if (!checkExist) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "User Not Registered");
+      return;
+    }
+
+    return {
+      msg: "Data fetched",
+      user: checkExist,
+    };
+  }
 }
 
 module.exports = AuthService;

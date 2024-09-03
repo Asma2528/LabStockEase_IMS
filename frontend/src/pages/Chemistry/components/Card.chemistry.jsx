@@ -5,14 +5,14 @@ import { LuView } from 'react-icons/lu';
 import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog';
 import { toast } from 'sonner';
 import { Button } from 'primereact/button';
-import UpdateModel from './UpdateModel.chemistry';
+// import UpdateModel from './UpdateModel.chemistry';
 import { useDeleteChemistryItemMutation } from '../../../provider/queries/Chemistry.query';
 
-const ChemistryCard = ({ data, id }) => {
+const ChemistryCard = ({ data }) => {
     const [visible, setVisible] = useState(false);
     const [DeleteChemistryItem, DeleteChemistryItemResponse] = useDeleteChemistryItemMutation();
 
-    const deleteHandler = (_id) => {
+    const deleteHandler = async (_id) => {
         confirmDialog({
             message: 'Do you want to delete this record?',
             header: 'Delete Confirmation',
@@ -21,12 +21,13 @@ const ChemistryCard = ({ data, id }) => {
             acceptClassName: 'p-button-danger',
             accept: async () => {
                 try {
-                    const { data, error } = await DeleteChemistryItem(id);
+                    const { data, error } = await DeleteChemistryItem(_id);
                     if (error) {
                         toast.error(error.data.message);
                         return;
                     }
-                    toast.success(data.msg);
+                    // eslint-disable-next-line react/prop-types
+                    toast.success(data.msg); // Using data.msg from mutation response, not a prop
                 } catch (e) {
                     toast.error(e.message);
                 }
@@ -40,7 +41,6 @@ const ChemistryCard = ({ data, id }) => {
     return (
         <>
             <tr className="bg-white border-b hover:bg-gray-50">
-
                 <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">{data.item_name}</td>
                 <td className="px-4 py-2">{data.company}</td>
                 <td className="px-4 py-2">{new Date(data.date_added).toLocaleDateString()}</td>
@@ -55,15 +55,18 @@ const ChemistryCard = ({ data, id }) => {
                         <button onClick={() => setVisible(true)} title="Edit" className="p-3 bg-yellow-300 text-white rounded-sm mx-2">
                             <FaRegEdit className="text-xl" />
                         </button>
-                        <Button loading={DeleteChemistryItemResponse.isLoading} onClick={() => deleteHandler(data._id)} title="Delete" className="p-3 bg-red-500 text-white rounded-sm mx-2">
+                        <Button 
+                            loading={DeleteChemistryItemResponse.isLoading}
+                            onClick={() => deleteHandler(data._id)} 
+                            title="Delete" 
+                            className="p-3 bg-red-500 text-white rounded-sm mx-2">
                             <FaRegTrashAlt className="text-xl" />
                         </Button>
                     </div>
                 </td>
             </tr>
 
-            <UpdateModel visible={visible} setVisible={setVisible} _id={data._id} />
-
+        {/*}    <UpdateModel visible={visible} setVisible={setVisible} _id={data._id} />*/}
             <ConfirmDialog acceptClassName='p-button-danger' contentClassName='py-2' />
         </>
     );
@@ -92,7 +95,6 @@ ChemistryCard.propTypes = {
         low_stock_alert: PropTypes.bool.isRequired,
         expiration_alert_date: PropTypes.string
     }).isRequired,
-    id: PropTypes.number.isRequired
 };
 
 export default ChemistryCard;

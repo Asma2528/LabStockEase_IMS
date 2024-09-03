@@ -2,6 +2,8 @@ const { body } = require("express-validator");
 
 class AuthValidation {
     static RegisterUser = [
+        body("token").notEmpty().withMessage("Token is Required"),
+
         body("name")
             .notEmpty()
             .withMessage("Name cannot be empty"),
@@ -20,6 +22,8 @@ class AuthValidation {
     ];
 
     static LoginUser = [
+        body("token").notEmpty().withMessage("Token is Required"),
+        
         body("email")
             .isEmail()
             .withMessage("Email must be valid")

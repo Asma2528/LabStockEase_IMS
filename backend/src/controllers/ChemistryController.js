@@ -17,10 +17,22 @@ class ChemistryController {
 
     // Get a chemistry item by its ID
     static getById = CatchAsync(async (req, res) => {
-        console.log('Get all route accessed');
-        const res_obj = await ChemistryService.getById(req?.user, req.params.id);
+        const { id } = req.params;
+    
+        // Validate ID format
+        if (!id || id.length !== 24) {
+            return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid ID format" });
+        }
+    
+        console.log("iNSIDE GET BY ID CHEMISTRY CONTROLLER ID: ", id);
+    
+        // Call the service method to get the chemistry item
+        const res_obj = await ChemistryService.getById(id);
+    
         return res.status(httpStatus.OK).json(res_obj);
     });
+
+
 
     // Get all chemistry items with pagination
     static GetAllItems = CatchAsync(async (req, res) => {

@@ -1,9 +1,13 @@
 const Loader = () => {
     return (
-        <div className="card flex justify-content-center justify-center align-middle">
-           Loading....
-        </div>
-    )
+
+        <tr>
+            <td className="card flex justify-content-center justify-center align-middle">
+                Loading....
+            </td>
+            </tr>
+
+    );
 }
 
-export default Loader
+export default Loader;

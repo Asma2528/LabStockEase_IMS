@@ -1,4 +1,3 @@
-// import React from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Formik, ErrorMessage, Field } from 'formik';
 import * as yup from 'yup';
@@ -165,10 +164,20 @@ const Model = ({ visible, setVisible }) => {
 
                         {/* Status */}
                         <div className="mb-3">
+                            <label htmlFor="status">Status <span className="text-red-500 text-sm">*</span></label>
+                            <Field as="select" name="status" id="status" className="w-full px-5 py-2 rounded-md outline-none border-1 border">
+                                <option value="">Select Status</option>
+                                <option value="In Stock">In Stock</option>
+                                <option value="Out of Stock">Out of Stock</option>
+                            </Field>
+                            <ErrorMessage name='status' component={'p'} className='text-red-500 text-sm' />
+                        </div>
+{/*                         
+                        <div className="mb-3">
                             <label htmlFor="status">Status</label>
                             <Field name="status" id="status" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Status" />
                             <ErrorMessage name='status' component={'p'} className='text-red-500 text-sm' />
-                        </div>
+                        </div> */}
 
                         {/* Description */}
                         <div className="mb-3">
@@ -185,10 +194,16 @@ const Model = ({ visible, setVisible }) => {
                         </div>
 
                         {/* Low Stock Alert */}
-                        <div className="mb-3">
-                            <label htmlFor="low_stock_alert">Low Stock Alert</label>
-                            <Field name="low_stock_alert" id="low_stock_alert" type="checkbox" className="mr-2" />
-                        </div>
+                        <div className="mb-3 flex items-center">
+    <Field 
+        name="low_stock_alert" 
+        id="low_stock_alert" 
+        type="checkbox" 
+        className="w-4 h-4 rounded-md outline-none border-1 border mr-2" 
+    />
+    <label htmlFor="low_stock_alert" className="text-sm">Yes, I want alerts</label>
+    <ErrorMessage name='low_stock_alert' component={'p'} className='text-red-500 text-sm ml-2' />
+</div>
 
                         {/* Expiration Alert Date */}
                         <div className="mb-3">

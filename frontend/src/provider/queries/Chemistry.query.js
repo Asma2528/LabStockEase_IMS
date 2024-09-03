@@ -15,7 +15,7 @@ export const ChemistryApi = createApi({
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            invalidatesTags: ['getAllChemistryItems'],
+            invalidatesTags: ['getAllChemistryItems']
         }),
         getAllChemistryItems: builder.query({
             query: (obj) => ({

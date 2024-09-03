@@ -4,7 +4,7 @@ const ApiError = require("../utils/ApiError");
 
 class ChemistryService {
     // Register a new chemistry item
-    static async RegisterChemistryItem(body) {
+    static async RegisterChemistryItem(user, body) {
         const {
             item_name, company, date_added, purpose, BillNo, total_quantity,
             issued_quantity, current_quantity, min_stock_level, unit_of_measure,
@@ -12,8 +12,7 @@ class ChemistryService {
             barcode, low_stock_alert, expiration_alert_date
         } = body;
 
-        // Check if the item already exists
-        const checkExist = await ChemistryModel.findOne({ barcode: barcode });
+        const checkExist = await ChemistryModel.findOne({ barcode, user });
 
         if (checkExist) {
             throw new ApiError(httpStatus.BAD_REQUEST, "Chemistry item already exists in the record");
@@ -23,18 +22,20 @@ class ChemistryService {
             item_name, company, date_added, purpose, BillNo, total_quantity,
             issued_quantity, current_quantity, min_stock_level, unit_of_measure,
             last_updated_date, expiration_date, location, status, description,
-            barcode, low_stock_alert, expiration_alert_date
+            barcode, low_stock_alert, expiration_alert_date, user
         });
 
-        return { msg: "Chemistry item added" };
+        return { msg: "Chemistry item added :)" };
     }
+
+
 
     // Delete a chemistry item by its ID
     static async DeleteChemistryItem(id) {
         const checkExist = await ChemistryModel.findByIdAndDelete(id);
 
         if (!checkExist) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Chemistry item not found in the record");
+            throw new ApiError(httpStatus.NOT_FOUND, "Chemistry item not found in the record");
         }
 
         return { msg: "Chemistry item deleted :)" };
@@ -42,14 +43,22 @@ class ChemistryService {
 
     // Get a chemistry item by its ID
     static async getById(id) {
-        const checkExist = await ChemistryModel.findById(id);
-
-        if (!checkExist) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Chemistry item not found in the record");
+        try {
+            const item = await ChemistryModel.findById(id);
+    
+            if (!item) {
+                throw new ApiError(httpStatus.NOT_FOUND, "Chemistry item not found in the record");
+            }
+    
+            return { item };
+        } catch (error) {
+            console.error("Error in getById method:");
+            console.error("Error message:", error.message);
+            console.error("Error stack:", error.stack);
+            throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Error fetching chemistry item");
         }
-
-        return { item: checkExist };
     }
+    
 
     // Get all chemistry items with pagination
     static async GetAllItems(page = 1, query = '') {
@@ -88,7 +97,7 @@ class ChemistryService {
         console.log("before returning: ", data, hasMore);
 
         return {
-            items: data, // Changed 'users' to 'items' for clarity
+            items: data,
             more: hasMore
         };
     }
@@ -109,7 +118,7 @@ class ChemistryService {
         }
 
         if (existingItem.barcode !== barcode) {
-            const checkExistBarcode = await ChemistryModel.findOne({ barcode: barcode });
+            const checkExistBarcode = await ChemistryModel.findOne({ barcode });
 
             if (checkExistBarcode) {
                 throw new ApiError(httpStatus.BAD_REQUEST, "Chemistry item with this barcode already exists in another record");
@@ -132,7 +141,7 @@ class ChemistryService {
             .select("item_name");
         
         return {
-            items: data // Changed 'users' to 'items' for consistency
+            items: data
         };
     }
 }
