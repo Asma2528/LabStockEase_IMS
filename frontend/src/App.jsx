@@ -20,7 +20,6 @@ function App() {
         }
       });
 
-      console.log(data.user);
       dispatch(setUser(data.user));
       SetLoading(false);
     } catch (error) {

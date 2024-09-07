@@ -7,34 +7,31 @@ import PropTypes from 'prop-types';
 import { useAddChemistryItemMutation } from '../../../provider/queries/Chemistry.query';
 
 const Model = ({ visible, setVisible }) => {
-    const [addChemistryItem, { isLoading}] = useAddChemistryItemMutation();
+    const [addChemistryItem, { isLoading }] = useAddChemistryItemMutation();
 
     const today = new Date();
     const validationSchema = yup.object({
         item_name: yup.string().required("Item name is required"),
         company: yup.string().required("Company/Brand is required"),
-        date_added: yup.date().required("Date added is required"),
         purpose: yup.string(),
         BillNo: yup.string().required("Bill No is required"),
         total_quantity: yup.number().required("Total quantity is required").positive().integer(),
-        issued_quantity: yup.number().required("Issued quantity is required").positive().integer(),
+        issued_quantity: yup.number().required("Issued quantity is required").integer(),
         current_quantity: yup.number().required("Current quantity is required").positive().integer(),
         min_stock_level: yup.number().required("Minimum stock level is required").positive().integer(),
         unit_of_measure: yup.string().required("Unit of measurement is required"),
-        last_updated_date: yup.date().required("Last updated date is required"),
         expiration_date: yup.date().required("Expiration date is required"),
         location: yup.string().required("Location is required"),
         status: yup.string(),
         description: yup.string(),
         barcode: yup.string(),
         low_stock_alert: yup.boolean(),
-        expiration_alert_date: yup.date()
+        expiration_alert_date: yup.date().required("Expiration alert date is required"),
     });
 
     const initialValues = {
         item_name: '',
         company: '',
-        date_added: today.toISOString().split('T')[0], // Convert to 'YYYY-MM-DD'
         purpose: '',
         BillNo: '',
         total_quantity: 0,
@@ -42,7 +39,6 @@ const Model = ({ visible, setVisible }) => {
         current_quantity: 0,
         min_stock_level: 0,
         unit_of_measure: '',
-        last_updated_date: today.toISOString().split('T')[0], // Convert to 'YYYY-MM-DD'
         expiration_date: today.toISOString().split('T')[0], // Convert to 'YYYY-MM-DD'
         location: '',
         status: '',
@@ -72,7 +68,7 @@ const Model = ({ visible, setVisible }) => {
             <Formik onSubmit={onSubmitHandler} initialValues={initialValues} validationSchema={validationSchema}>
                 {({ handleSubmit }) => (
                     <form onSubmit={handleSubmit} className="w-full">
-                          <div className="mb-3">
+                        <div className="mb-3">
                             <label htmlFor="item_name">Item Name <span className="text-red-500 text-sm">*</span></label>
                             <Field name="item_name" id="item_name" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Item Name" />
                             <ErrorMessage name='item_name' component={'p'} className='text-red-500 text-sm' />
@@ -85,12 +81,6 @@ const Model = ({ visible, setVisible }) => {
                             <ErrorMessage name='company' component={'p'} className='text-red-500 text-sm' />
                         </div>
 
-                        {/* Date Added */}
-                        <div className="mb-3">
-                            <label htmlFor="date_added">Date Added <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="date_added" id="date_added" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                            <ErrorMessage name='date_added' component={'p'} className='text-red-500 text-sm' />
-                        </div>
 
                         {/* Purpose */}
                         <div className="mb-3">
@@ -141,13 +131,6 @@ const Model = ({ visible, setVisible }) => {
                             <ErrorMessage name='unit_of_measure' component={'p'} className='text-red-500 text-sm' />
                         </div>
 
-                        {/* Last Updated Date */}
-                        <div className="mb-3">
-                            <label htmlFor="last_updated_date">Last Updated Date <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="last_updated_date" id="last_updated_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                            <ErrorMessage name='last_updated_date' component={'p'} className='text-red-500 text-sm' />
-                        </div>
-
                         {/* Expiration Date */}
                         <div className="mb-3">
                             <label htmlFor="expiration_date">Expiration Date <span className="text-red-500 text-sm">*</span></label>
@@ -172,7 +155,7 @@ const Model = ({ visible, setVisible }) => {
                             </Field>
                             <ErrorMessage name='status' component={'p'} className='text-red-500 text-sm' />
                         </div>
-{/*                         
+                        {/*                         
                         <div className="mb-3">
                             <label htmlFor="status">Status</label>
                             <Field name="status" id="status" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Status" />
@@ -195,17 +178,17 @@ const Model = ({ visible, setVisible }) => {
 
                         {/* Low Stock Alert */}
                         <div className="mb-3 flex items-center">
-    <Field 
-        name="low_stock_alert" 
-        id="low_stock_alert" 
-        type="checkbox" 
-        className="w-4 h-4 rounded-md outline-none border-1 border mr-2" 
-    />
-    <label htmlFor="low_stock_alert" className="text-sm">Yes, I want alerts</label>
-    <ErrorMessage name='low_stock_alert' component={'p'} className='text-red-500 text-sm ml-2' />
-</div>
+                            <Field
+                                name="low_stock_alert"
+                                id="low_stock_alert"
+                                type="checkbox"
+                                className="w-4 h-4 rounded-md outline-none border-1 border mr-2"
+                            />
+                            <label htmlFor="low_stock_alert" className="text-sm">Yes, I want alerts</label>
+                            <ErrorMessage name='low_stock_alert' component={'p'} className='text-red-500 text-sm ml-2' />
+                        </div>
 
-                        {/* Expiration Alert Date */}
+
                         <div className="mb-3">
                             <label htmlFor="expiration_alert_date">Expiration Alert Date</label>
                             <Field name="expiration_alert_date" id="expiration_alert_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />

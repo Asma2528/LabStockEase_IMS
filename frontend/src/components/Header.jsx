@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { collapsedSidebar, toggleSidebar } from '../provider/slice/Sidebar.slice';
 import { HiOutlineMenu } from "react-icons/hi";
 import { IoLogOutOutline } from "react-icons/io5";
@@ -7,9 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast} from 'sonner'
 import logo from '../assets/logo.png';
 
+
 const Header = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+     // Select user from Redux store
+     const user = useSelector((state) => state.user?.user);
+
     const sidebarHandler = () => dispatch(collapsedSidebar());
     const sidebarHandlerToggle = () => dispatch(toggleSidebar());
     const logoutHandler = () => {
@@ -37,9 +41,10 @@ const Header = () => {
                 <img src={logo} alt="LabStockEase Logo" className="mx-2 w-6 h-9" />
                     <h1 className='text-xl text-white my-2'>LabStockEase</h1>
                 </div>
-                <div className="end">
-                <button title='logout' onClick={logoutHandler}>
-                        <IoLogOutOutline className='text-2xl text-white' />
+                <div className="end flex gap-4">
+                <p className="text-sm text-white ">Hello, {user?.name || "Guest"}</p>
+                <button title='logout' className="-mt-1" onClick={logoutHandler}>
+                        <IoLogOutOutline className='text-2xl text-white ' />
                     </button>
                 </div>
             </div>

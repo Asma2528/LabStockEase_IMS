@@ -11,10 +11,6 @@ const itemSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    date_added: {
-        type: Date,
-        required: true
-    },
     purpose: {
         type: String,
         trim: true
@@ -49,10 +45,6 @@ const itemSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    last_updated_date: {
-        type: Date,
-        required: true
-    },
     expiration_date: {
         type: Date,
         required: true
@@ -80,7 +72,8 @@ const itemSchema = new mongoose.Schema({
         default: true
     },
     expiration_alert_date: {
-        type: Date
+        type: Date,
+        required: true
     }
 }, {
     timestamps: true

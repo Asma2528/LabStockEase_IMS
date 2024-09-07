@@ -65,6 +65,7 @@ const Register = () => {
                 name='name'
                 className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
                 placeholder='Enter Your Name'
+                autoComplete='username'
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='name' />
             </div>
@@ -76,6 +77,8 @@ const Register = () => {
                 type='email'
                 className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
                 placeholder='Enter Email Address'
+                autoComplete='email'
+                  
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='email' />
             </div>
@@ -87,6 +90,7 @@ const Register = () => {
                 type='password'
                 className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
                 placeholder='********'
+                autoComplete='current-password'
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='password' />
             </div>

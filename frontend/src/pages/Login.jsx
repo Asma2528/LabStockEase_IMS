@@ -58,6 +58,7 @@ const Login = () => {
                 type='email'
                 className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
                 placeholder='Enter Email Address'
+                autoComplete='email'
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='email' />
             </div>
@@ -69,6 +70,7 @@ const Login = () => {
                 type='password'
                 className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
                 placeholder='********'
+                autoComplete='current-password'
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='password' />
             </div>

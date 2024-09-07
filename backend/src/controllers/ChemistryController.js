@@ -11,7 +11,9 @@ class ChemistryController {
 
     // Update a chemistry item by its ID
     static updateById = CatchAsync(async (req, res) => {
-        const res_obj = await ChemistryService.updateById(req?.user, req.body, req.params.id);
+        console.log("Before cont")
+        const res_obj = await ChemistryService.UpdateChemistryItemById(req?.user, req.body, req.params.id);
+        console.log("After cont")
         return res.status(httpStatus.OK).json(res_obj);
     });
 
@@ -24,7 +26,6 @@ class ChemistryController {
             return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid ID format" });
         }
     
-        console.log("iNSIDE GET BY ID CHEMISTRY CONTROLLER ID: ", id);
     
         // Call the service method to get the chemistry item
         const res_obj = await ChemistryService.getById(id);
@@ -36,14 +37,20 @@ class ChemistryController {
 
     // Get all chemistry items with pagination
     static GetAllItems = CatchAsync(async (req, res) => {
-        console.log('Get all route accessed');
-        const res_obj = await ChemistryService.GetAllItems(req?.user, req.query.page);
-        return res.status(httpStatus.OK).json(res_obj);
+        try {
+            const query = req.query.query || ''; // handle optional query parameter
+            const result = await ChemistryService.GetAllItems(query); // Call the service method
+            res.json(result);
+        } catch (error) {
+            console.error('Error fetching items:', error); // Log the error to the server console
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+        }
     });         
 
     // Delete a chemistry item by its ID
     static DeleteChemistryItem = CatchAsync(async (req, res) => {
         const res_obj = await ChemistryService.DeleteChemistryItem(req?.user, req.params.id);
+    
         return res.status(httpStatus.OK).json(res_obj);
     });
     

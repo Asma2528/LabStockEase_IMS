@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { SlChemistry } from "react-icons/sl";
-import { BiSolidReport } from "react-icons/bi";
 import { GiMaterialsScience } from "react-icons/gi";
 import { useDispatch, useSelector } from 'react-redux';
 import '../index.css';
@@ -31,7 +30,6 @@ const MainLayout = ({ children }) => {
           <MenuItem component={<Link to="/botany" />} icon={<PiPlant className="text-2xl" />}> Botany </MenuItem>
           <MenuItem component={<Link to="/microbiology" />} icon={<FaVirus className="text-xl" />}> Microbiology </MenuItem>
           <MenuItem component={<Link to="/lifescience" />} icon={<MdOutlineScience className="text-2xl" />}> Life Science </MenuItem>
-          <MenuItem icon={<BiSolidReport />}> Reports </MenuItem>
         </Menu>
       </Sidebar> <div className="w-full">
         {children}

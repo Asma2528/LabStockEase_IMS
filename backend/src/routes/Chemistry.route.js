@@ -8,8 +8,8 @@ const router = express.Router();
 // Apply authentication middleware to all routes
 router.use(Authentication);
 
-// Route to get all chemistry items with pagination
-router.get("/get-all", ChemistryValidation.query_page, Validation, ChemistryController.GetAllItems);
+// Route to get all chemistry items without pagination
+router.get("/get-all", ChemistryController.GetAllItems);
 
 // Route to register a new chemistry item
 router.post("/register", ChemistryValidation.RegisterChemistry, Validation, ChemistryController.RegisterChemistryItem);
@@ -23,6 +23,6 @@ router.patch("/update/:id", ChemistryValidation.RegisterChemistry, Validation, C
 // Route to delete a chemistry item by its ID
 router.delete("/delete/:id", ChemistryValidation.Params_id, Validation, ChemistryController.DeleteChemistryItem);
 
-router.get("/get-search",ChemistryController.GetChemistryItemForSearch);
+router.get("/get-search", ChemistryController.GetChemistryItemForSearch);
 
 module.exports = router;

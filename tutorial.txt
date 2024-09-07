@@ -108,32 +108,9 @@ Installed react pro sidebar
     npm i react-pro-sidebar
 Outlet tag - React Outlet is a component provided by React Router that serves as a placeholder for child routes within a parent route. It allows for the nesting of routes, enabling developers to create complex navigation structures in their applications.
 
+inside frontend
+    npm install date-fns
 
-
-//LEFT -
-- check login, registration and logout
-- UI designing
-- basic setup for your categories, items, reports and doing its navigation
-Planned Fields for the Item Model: I have drafted the following fields for the item model:
-item_id: Unique identifier for the item.
-item_name: name of the item.
-company: company/ brand brought
-date_added: Date the item was added to inventory.
-purpose: purpose of the item (if any)
-BillNo: bill no
-total_quantity: total stock level. (Received)
-issued_quantity: how much stock was used (issued)
-current_quantity: current stock (balance)  (I need to calculate)
-min_stock_level: Minimum stock threshold.
-unit_of_measure: Unit of measurement (e.g., pcs, liters).\
-last_updated_date: Date the item was last updated.
-expiration_date: Expiry date for items.
-location: Storage location of the item.
-status: Status (e.g., In Stock, Out of Stock). (I need to calculate)
-description: Additional details about the item.
-barcode: Barcode or QR code data.
-low_stock_alert: Boolean to trigger low-stock alerts.  (I need to calculate)
-expiration_alert_date: Date to trigger expiration alerts.  (I need to calculate)
 
 
 // react google captcha

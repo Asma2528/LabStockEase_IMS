@@ -1,14 +1,15 @@
 const httpStatus = require("http-status");
 const { ChemistryModel } = require("../models");
 const ApiError = require("../utils/ApiError");
+const mongoose = require('mongoose');
 
 class ChemistryService {
     // Register a new chemistry item
     static async RegisterChemistryItem(user, body) {
         const {
-            item_name, company, date_added, purpose, BillNo, total_quantity,
+            item_name, company, purpose, BillNo, total_quantity,
             issued_quantity, current_quantity, min_stock_level, unit_of_measure,
-            last_updated_date, expiration_date, location, status, description,
+            expiration_date, location, status, description,
             barcode, low_stock_alert, expiration_alert_date
         } = body;
 
@@ -19,9 +20,9 @@ class ChemistryService {
         }
 
         await ChemistryModel.create({
-            item_name, company, date_added, purpose, BillNo, total_quantity,
+            item_name, company,  purpose, BillNo, total_quantity,
             issued_quantity, current_quantity, min_stock_level, unit_of_measure,
-            last_updated_date, expiration_date, location, status, description,
+            expiration_date, location, status, description,
             barcode, low_stock_alert, expiration_alert_date, user
         });
 
@@ -31,16 +32,24 @@ class ChemistryService {
 
 
     // Delete a chemistry item by its ID
-    static async DeleteChemistryItem(id) {
-        const checkExist = await ChemistryModel.findByIdAndDelete(id);
-
-        if (!checkExist) {
-            throw new ApiError(httpStatus.NOT_FOUND, "Chemistry item not found in the record");
+    static async DeleteChemistryItem(user,id) {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                throw new Error("Invalid item ID format");
+            }
+    
+            
+            const result = await ChemistryModel.findByIdAndDelete(id);
+            if (!result) {
+                throw new Error('Chemistry item not found in the record');
+            }
+            return { msg: 'Item deleted successfully' };
+        } catch (error) {
+            console.error("Error deleting item:", error.message);  // Add this line
+            throw new Error(error.message);
         }
-
-        return { msg: "Chemistry item deleted :)" };
     }
-
+    
     // Get a chemistry item by its ID
     static async getById(id) {
         try {
@@ -61,13 +70,14 @@ class ChemistryService {
     
 
     // Get all chemistry items with pagination
-    static async GetAllItems(page = 1, query = '') {
-        console.log("inside get all items - services");
-        const limit = 10;
-        const skip = (Number(page) - 1) * limit;
+  // Get all chemistry items with search functionality
+static async GetAllItems(query = '') {
+    try {
 
+        
         const regexQuery = new RegExp(query, 'i'); // Create regex for string matching
-
+        
+        // Build the search query
         const queries = {
             $or: [
                 { item_name: regexQuery },
@@ -83,32 +93,31 @@ class ChemistryService {
 
         // Retrieve filtered items
         const data = await ChemistryModel.find(queries)
-            .select("item_name company date_added purpose BillNo total_quantity issued_quantity current_quantity min_stock_level unit_of_measure last_updated_date expiration_date location status description barcode low_stock_alert")
-            .skip(skip)
-            .limit(limit);
-        
-        console.log("Data retrieved:", data);
+            .select("item_name company createdAt purpose BillNo total_quantity issued_quantity current_quantity min_stock_level unit_of_measure updatedAt expiration_date location status description barcode low_stock_alert expiration_alert_date");
 
+
+           
         // Total documents
-        const totalChemistry = await ChemistryModel.countDocuments(queries);
-        // Has more
-        const hasMore = skip + limit < totalChemistry;
-
-        console.log("before returning: ", data, hasMore);
+        const totalChemistry = data.length; // Since there's no pagination, total is simply the length of data
 
         return {
             items: data,
-            more: hasMore
+            total: totalChemistry
         };
+    } catch (error) {
+        console.error('Error in GetAllItems:', error);
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Error fetching chemistry items");
     }
+}
+
 
     // Update a chemistry item by its ID
-    static async UpdateChemistryItemById(body, id) {
+    static async UpdateChemistryItemById(user,body, id) {
         const {
-            item_name, company, date_added, purpose, BillNo, total_quantity,
+            item_name, company, purpose, BillNo, total_quantity,
             issued_quantity, current_quantity, min_stock_level, unit_of_measure,
-            last_updated_date, expiration_date, location, status, description,
-            barcode, low_stock_alert
+             expiration_date, location, status, description,
+            barcode, low_stock_alert, expiration_alert_date
         } = body;
 
         const existingItem = await ChemistryModel.findById(id);
@@ -126,10 +135,10 @@ class ChemistryService {
         }
 
         await ChemistryModel.findByIdAndUpdate(id, {
-            item_name, company, date_added, purpose, BillNo, total_quantity,
+            item_name, company,  purpose, BillNo, total_quantity,
             issued_quantity, current_quantity, min_stock_level, unit_of_measure,
-            last_updated_date, expiration_date, location, status, description,
-            barcode, low_stock_alert
+             expiration_date, location, status, description,
+            barcode, low_stock_alert, expiration_alert_date
         }, { new: true });
 
         return { msg: "Chemistry item updated" };
@@ -138,8 +147,10 @@ class ChemistryService {
     // Get chemistry items for search
     static async GetChemistryItemForSearch() {
         const data = await ChemistryModel.find({})
-            .select("item_name");
+            .select("item_name company barcode");
         
+            
+
         return {
             items: data
         };

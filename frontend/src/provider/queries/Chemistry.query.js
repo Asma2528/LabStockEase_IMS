@@ -19,18 +19,16 @@ export const ChemistryApi = createApi({
         }),
         getAllChemistryItems: builder.query({
             query: (obj) => ({
-                url: `/chemistry/get-all?query=${obj.query}&page=${obj.page}`,
+                url: `/chemistry/get-all?query=${obj.query}`, // Removed pagination parameters
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-        
             providesTags: ['getAllChemistryItems'],
         }),
-       getForSearchChemistryItem: builder.query({
-            // query: (obj) => ({
-                query: () => ({
+        getForSearchChemistryItem: builder.query({
+            query: () => ({
                 url: `/chemistry/get-search`,
                 method: 'GET',
                 headers: {
@@ -49,7 +47,7 @@ export const ChemistryApi = createApi({
             }),
             invalidatesTags: ['getAllChemistryItems'],
         }),
-       getChemistryItem: builder.query({
+        getChemistryItem: builder.query({
             query: (id) => ({
                 url: `/chemistry/get/${id}`,
                 method: 'GET',
@@ -60,7 +58,7 @@ export const ChemistryApi = createApi({
             providesTags: ['getChemistryItem'],
         }),
         updateChemistryItem: builder.mutation({
-            query: ({ id, data }) => ({
+            query: ({ data,id }) => ({
                 url: `/chemistry/update/${id}`,
                 method: 'PATCH',
                 body: data,
