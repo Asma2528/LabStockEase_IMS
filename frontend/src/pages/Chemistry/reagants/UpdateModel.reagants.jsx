@@ -4,7 +4,7 @@ import { ErrorMessage, Field, Formik } from 'formik';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { toast } from 'sonner';
-import { useUpdateChemistryItemMutation } from '../../../provider/queries/Chemistry.query';
+import { useUpdateReagantsItemMutation } from '../../../provider/queries/Reagants.query';
 import { format } from 'date-fns';
 
 const UpdateModel = ({ visible, setVisible, item }) => {
@@ -50,7 +50,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
         expiration_alert_date: item?.expiration_alert_date ? format(new Date(item.expiration_alert_date), 'yyyy-MM-dd') : '',
     };
 
-    const [updateChemistryItem, updateChemistryResponse] = useUpdateChemistryItemMutation();
+    const [updateReagantsItem, updateReagantsResponse] = useUpdateReagantsItemMutation();
     
 
     const onSubmitHandler = async (values) => {
@@ -65,7 +65,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
     
      
     
-            const response = await updateChemistryItem({
+            const response = await updateReagantsItem({
                 data: formattedValues,
                 id: item._id,
             });
@@ -148,12 +148,30 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                                 <ErrorMessage name='min_stock_level' component={'p'} className='text-red-500 text-sm' />
                             </div>
 
-                            {/* Unit of Measure */}
+                           
                             <div className="mb-3">
-                                <label htmlFor="unit_of_measure">Unit of Measure <span className="text-red-500 text-sm">*</span></label>
-                                <Field name="unit_of_measure" id="unit_of_measure" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Unit of Measure" />
-                                <ErrorMessage name='unit_of_measure' component={'p'} className='text-red-500 text-sm' />
-                            </div>
+                            <label htmlFor="unit_of_measure">
+                                Unit of Measure <span className="text-red-500 text-sm">*</span>
+                            </label>
+                            <Field
+                                name="unit_of_measure"
+                                id="unit_of_measure"
+                                as="select"
+                                className="w-full px-5 py-2 rounded-md outline-none border-1 border"
+                            >
+                                <option value="" label="Select unit" />
+                                <option value="ml" label="Milliliter (ml)" />
+                                <option value="l" label="Liter (l)" />
+                                <option value="g" label="Gram (g)" />
+                                <option value="kg" label="Kilogram (kg)" />
+                            </Field>
+                            <ErrorMessage
+                                name="unit_of_measure"
+                                component="p"
+                                className="text-red-500 text-sm"
+                            />
+                        </div>
+
 
                             {/* Expiration Date */}
                             <div className="mb-3">
@@ -218,7 +236,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                         <div className="flex justify-end">
                             <Button
                             type="submit"
-                                loading={updateChemistryResponse.isLoading}
+                                loading={updateReagantsResponse.isLoading}
                                 className="px-4 rounded-md py-2 bg-blue-900 text-white inline-flex items-center gap-x-2">
                                 Update Item
                             </Button>

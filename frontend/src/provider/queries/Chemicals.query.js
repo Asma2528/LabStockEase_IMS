@@ -1,81 +1,81 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const ChemistryApi = createApi({
-    reducerPath: 'ChemistryApi',
+export const ChemicalsApi = createApi({
+    reducerPath: 'ChemicalsApi',
     baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BACKEND_URL }),
 
-    tagTypes: ['getAllChemistryItems', 'getChemistryItem'],
+    tagTypes: ['getAllChemicalsItems', 'getChemicalsItem'],
     endpoints: (builder) => ({
-        addChemistryItem: builder.mutation({
+        addChemicalsItem: builder.mutation({
             query: (item) => ({
-                url: '/chemistry/register', // Updated to match backend route
+                url: '/chemicals/register', // Updated to match backend route
                 method: 'POST',
                 body: item,
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            invalidatesTags: ['getAllChemistryItems']
+            invalidatesTags: ['getAllChemicalsItems']
         }),
-        getAllChemistryItems: builder.query({
+        getAllChemicalsItems: builder.query({
             query: (obj) => ({
-                url: `/chemistry/get-all?query=${obj.query}`, // Removed pagination parameters
+                url: `/chemicals/get-all?query=${obj.query}`, // Removed pagination parameters
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            providesTags: ['getAllChemistryItems'],
+            providesTags: ['getAllChemicalsItems'],
         }),
-        getForSearchChemistryItem: builder.query({
+        getForSearchChemicalsItem: builder.query({
             query: () => ({
-                url: `/chemistry/get-search`,
+                url: `/chemicals/get-search`,
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("token")
                 }
             }),
-            providesTags: ['getAllChemistryItems']
+            providesTags: ['getAllChemicalsItems']
         }),
-        deleteChemistryItem: builder.mutation({
+        deleteChemicalsItem: builder.mutation({
             query: (id) => ({
-                url: `/chemistry/delete/${id}`,
+                url: `/chemicals/delete/${id}`,
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            invalidatesTags: ['getAllChemistryItems'],
+            invalidatesTags: ['getAllChemicalsItems'],
         }),
-        getChemistryItem: builder.query({
+        getChemicalsItem: builder.query({
             query: (id) => ({
-                url: `/chemistry/get/${id}`,
+                url: `/chemicals/get/${id}`,
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            providesTags: ['getChemistryItem'],
+            providesTags: ['getChemicalsItem'],
         }),
-        updateChemistryItem: builder.mutation({
+        updateChemicalsItem: builder.mutation({
             query: ({ data,id }) => ({
-                url: `/chemistry/update/${id}`,
+                url: `/chemicals/update/${id}`,
                 method: 'PATCH',
                 body: data,
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            invalidatesTags: ['getAllChemistryItems', 'getChemistryItem'],
+            invalidatesTags: ['getAllChemicalsItems', 'getChemicalsItem'],
         }),
     }),
 });
 
 export const {
-    useAddChemistryItemMutation,
-    useGetAllChemistryItemsQuery,
-    useDeleteChemistryItemMutation,
-    useGetChemistryItemQuery,
-    useUpdateChemistryItemMutation,
-    useGetForSearchChemistryItemQuery
-} = ChemistryApi;
+    useAddChemicalsItemMutation,
+    useGetAllChemicalsItemsQuery,
+    useDeleteChemicalsItemMutation,
+    useGetChemicalsItemQuery,
+    useUpdateChemicalsItemMutation,
+    useGetForSearchChemicalsItemQuery
+} = ChemicalsApi;

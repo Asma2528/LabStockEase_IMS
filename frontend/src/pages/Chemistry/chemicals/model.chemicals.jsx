@@ -4,10 +4,10 @@ import * as yup from 'yup';
 import { Button } from 'primereact/button';
 import { toast } from 'sonner';
 import PropTypes from 'prop-types';
-import { useAddChemistryItemMutation } from '../../../provider/queries/Chemistry.query';
+import { useAddChemicalsItemMutation } from '../../../provider/queries/Chemicals.query';
 
 const Model = ({ visible, setVisible }) => {
-    const [addChemistryItem, { isLoading }] = useAddChemistryItemMutation();
+    const [addChemicalsItem, { isLoading }] = useAddChemicalsItemMutation();
 
     const today = new Date();
     const validationSchema = yup.object({
@@ -50,12 +50,12 @@ const Model = ({ visible, setVisible }) => {
 
     const onSubmitHandler = async (values, { resetForm }) => {
         try {
-            const response = await addChemistryItem(values);
+            const response = await addChemicalsItem(values);
             if (response.error) {
                 toast.error(response.error.data.message || 'Failed to add item');
                 return;
             }
-            toast.success("Chemistry Item Added Successfully");
+            toast.success("Chemicals Item Added Successfully");
             resetForm();
             setVisible(false);
         } catch (e) {
@@ -126,9 +126,27 @@ const Model = ({ visible, setVisible }) => {
 
                         {/* Unit of Measure */}
                         <div className="mb-3">
-                            <label htmlFor="unit_of_measure">Unit of Measure <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="unit_of_measure" id="unit_of_measure" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Unit of Measure" />
-                            <ErrorMessage name='unit_of_measure' component={'p'} className='text-red-500 text-sm' />
+                            <label htmlFor="unit_of_measure">
+                                Unit of Measure <span className="text-red-500 text-sm">*</span>
+                            </label>
+                            <Field
+                                name="unit_of_measure"
+                                id="unit_of_measure"
+                                as="select"
+                                className="w-full px-5 py-2 rounded-md outline-none border-1 border"
+                            >
+                                <option value="" label="Select unit" />
+                                <option value="ml" label="Milliliter (ml)" />
+                                <option value="l" label="Liter (l)" />
+                                <option value="g" label="Gram (g)" />
+                                <option value="kg" label="Kilogram (kg)" />
+                                <option value="m^3" label="Cubic Meter (m³)" />
+                            </Field>
+                            <ErrorMessage
+                                name="unit_of_measure"
+                                component="p"
+                                className="text-red-500 text-sm"
+                            />
                         </div>
 
                         {/* Expiration Date */}

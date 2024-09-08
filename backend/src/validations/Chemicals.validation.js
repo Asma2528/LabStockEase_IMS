@@ -1,7 +1,7 @@
 const { body, param, query } = require('express-validator');
 
-class ChemistryValidation {
-    static RegisterChemistry = [
+class ChemicalsValidation {
+    static RegisterChemicals = [
         body('item_name').notEmpty().withMessage('Item name cannot be empty'),
         body('company').notEmpty().withMessage('Company/Brand cannot be empty'),
         body('purpose').optional().isString().withMessage('Purpose must be a string'),
@@ -27,4 +27,4 @@ class ChemistryValidation {
 
 }
 
-module.exports = ChemistryValidation;
+module.exports = ChemicalsValidation;

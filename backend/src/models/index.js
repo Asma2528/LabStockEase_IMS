@@ -1,3 +1,4 @@
 exports.UserModel = require("./user.models");
 exports.ProfileModel = require("./profile.models");
-exports.ChemistryModel = require("./chemistry.models");
+exports.ChemicalsModel = require("./chemicals.models");
+exports.ReagantsModel = require("./reagants.models");

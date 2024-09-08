@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import BreadCrumbs from '../../components/BreadCrumbs';
-import Model from './components/model.chemistry';
+import BreadCrumbs from '../../../components/BreadCrumbs';
+import Model from './model.reagants';
 import { GoPlus } from "react-icons/go";
-import { useGetAllChemistryItemsQuery } from '../../provider/queries/Chemistry.query';
-import Loader from '../../components/Loader';
-import ChemistryCard from './components/Card.chemistry';
+import { useGetAllReagantsItemsQuery } from '../../../provider/queries/Reagants.query';
+import Loader from '../../../components/Loader';
+import ReagantsCard from './Card.reagants';
 import { useNavigate } from 'react-router-dom';
 import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog';
 import { toast } from 'sonner';
 import { Button } from 'primereact/button';
-import { useDeleteChemistryItemMutation } from '../../provider/queries/Chemistry.query';
+import { useDeleteReagantsItemMutation } from '../../../provider/queries/Reagants.query';
 
-const ChemistryPage = () => {
+const ReagantsPage = () => {
     const [visible, setVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -20,17 +20,17 @@ const ChemistryPage = () => {
     const [Search, setSearch] = useState('');
 
     // Fetch all items without pagination
-    const { isLoading, data, isFetching } = useGetAllChemistryItemsQuery({
+    const { isLoading, data, isFetching } = useGetAllReagantsItemsQuery({
         query: Search
     });
 
 
     const onSubmitHandler = (e) => {
         e.preventDefault();
-        navigate(`/chemistry?query=${Search}`);
+        navigate(`/Reagants?query=${Search}`);
     };
 
-    const [DeleteChemistryItem] = useDeleteChemistryItemMutation();
+    const [DeleteReagantsItem] = useDeleteReagantsItemMutation();
 
     const deleteHandler = (_id) => {
     setDialogVisible(true);
@@ -48,7 +48,7 @@ const ChemistryPage = () => {
                     className="p-button-danger rounded-md bg-red-500 text-white inline-flex items-center p-2 justify-center pr-4" 
                     onClick={async () => {
                         try {
-                            const { data, error } = await DeleteChemistryItem(_id);
+                            const { data, error } = await DeleteReagantsItem(_id);
                             if (error) {
                                 toast.error(error.data.message);
                                 return;
@@ -78,7 +78,8 @@ const ChemistryPage = () => {
 
     return (
         <>
-            <BreadCrumbs PageLink='/chemistry' PageName='Chemistry' />
+        <div className="w-full flex flex-wrap justify-evenly mt-10">
+            <BreadCrumbs PageLink='/Reagants' PageName='Reagants' />
 
             <div className="mb-3 flex justify-end w-[85%] mx-auto">
                 <button
@@ -122,7 +123,7 @@ const ChemistryPage = () => {
                             <tbody>
                                 {data?.items.length > 0 ? (
                                     data.items.map((c) => (
-                                        <ChemistryCard
+                                        <ReagantsCard
                                             key={c._id}
                                             data={c}
                                             onDelete={() => {
@@ -149,8 +150,9 @@ const ChemistryPage = () => {
             acceptClassName='p-button-danger p-dialog-footer' 
             contentClassName='py-4' 
         />
+        </div>
         </>
     );
 };
 
-export default ChemistryPage;
+export default ReagantsPage;

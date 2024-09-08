@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const itemSchema = new mongoose.Schema({
+const reagantsSchema = new mongoose.Schema({
     item_name: {
         type: String,
         required: true,
@@ -79,6 +79,6 @@ const itemSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const ChemistryModel = mongoose.model("ChemistryItem", itemSchema);
+const ReagantsModel = mongoose.model("ChemistryReagants", reagantsSchema);
 
-module.exports = ChemistryModel;
+module.exports = ReagantsModel;

@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
 import { LuView } from 'react-icons/lu';
 import { Button } from 'primereact/button';
-import ViewItem from './display.chemistry'; // Import the ViewItem component
-import UpdateItem from './UpdateModel.chemistry';
+import ViewItem from './display.reagants'; // Import the ViewItem component
+import UpdateItem from './UpdateModel.reagants';
 
-const ChemistryCard = ({ data, onDelete }) => {
+const ReagantsCard = ({ data, onDelete }) => {
     const [visible, setVisible] = useState(false); // State for controlling the dialog visibility
 
 
@@ -71,7 +71,7 @@ const ChemistryCard = ({ data, onDelete }) => {
 };
 
 // Define PropTypes
-ChemistryCard.propTypes = {
+ReagantsCard.propTypes = {
     data: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         item_name: PropTypes.string.isRequired,
@@ -96,4 +96,4 @@ ChemistryCard.propTypes = {
     onDelete: PropTypes.func.isRequired
 };
 
-export default ChemistryCard;
+export default ReagantsCard;
