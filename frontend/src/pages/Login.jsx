@@ -6,9 +6,10 @@ import { useLoginUserMutation } from '../provider/queries/Auth.query';
 import { toast } from 'sonner';
 import { useRef } from 'react';
 import ReCAPTCHA from "react-google-recaptcha";
+import { useDispatch } from 'react-redux';
+import { setUser } from '../provider/slice/user.slice';
 
 const Login = () => {
-  // Initial values for the form
   const initialValues = {
     token: '',
     email: '',
@@ -16,11 +17,10 @@ const Login = () => {
   };
 
   const RecaptchaRef = useRef();
-
   const [LoginUser, LoginUserResponse] = useLoginUserMutation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // Validation schema for form validation
   const validationSchema = yup.object({
     email: yup.string().email('Email must be valid').required('Email is required'),
     password: yup.string().min(5, 'Password must be at least 5 characters').required('Password is required'),
@@ -28,22 +28,30 @@ const Login = () => {
 
   const OnSubmitHandler = async (values, { resetForm }) => {
     try {
-      const { data, error } = await LoginUser(values);
-      if (error) {
-        toast.error(error?.data?.message || 'An error occurred');
-        return;
-      }
-      localStorage.setItem("token", data.token);
-      
-      toast.success('User Login Successful');
-      resetForm();
-      navigate("/");
+  
+        const { data, error } = await LoginUser(values);
+        if (error) {
+            toast.error(error?.data?.message || 'An error occurred');
+            return;
+        }
+        localStorage.setItem("token", data.token);
+
+        // Dispatch user email and role (adjust as needed based on available data)
+        dispatch(setUser({
+            email: data.email, // Use the email from the response
+            role: 'unknown', // Adjust or remove if role is not provided
+        }));
+        
+        toast.success('User Login Successful');
+        resetForm();
+        navigate("/");
     } catch (error) {
-      toast.error(error.message);
+        toast.error(error.message);
     } finally {
-      RecaptchaRef.current.reset();
+        RecaptchaRef.current.reset();
     }
-  };
+};
+
 
   return (
     <div className='min-h-screen flex items-center justify-center w-full bg-blue-100'>
@@ -74,12 +82,11 @@ const Login = () => {
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='password' />
             </div>
-            <div className="mb-3 py-1">
+           <div className="mb-3 py-1">
               <ReCAPTCHA
                 ref={RecaptchaRef}
                 sitekey={import.meta.env.VITE_SITE_KEY}
                 onChange={(token) => {
-                  console.log('ReCAPTCHA token:', token);
                   setFieldValue('token', token);
                 }}
               />
@@ -92,10 +99,7 @@ const Login = () => {
               </Button>
             </div>
             <div className="mb-3 py-1 flex items-center justify-end">
-              <p className="inline-flex items-center gap-x-1"> Dont Have An Account?<Link className='font-semibold text-blue-900' to={'/register'}>Register</Link></p>
-            </div>
-            <div className="mb-3 py-1 flex items-center justify-end">
-              <p className="inline-flex items-center gap-x-1"><Link className='font-semibold text-blue-900' to={'#'}>Forget Password?</Link></p>
+              <p className="inline-flex items-center gap-x-1"><Link className='font-semibold text-blue-900' to={'/forgot-password'}>Forgot Password?</Link></p>
             </div>
           </form>
         )}

@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from '../App';
+import AuthorizedRoute from './AuthorizedRoute';
+
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Home from "../pages/Home/index"; 
@@ -9,6 +11,8 @@ import ErrorPage from "../pages/Error";
 import ChemistryPage from "../pages/Chemistry/Home";
 import ChemicalsPage from "../pages/Chemistry/chemicals";
 import ReagantsPage from "../pages/Chemistry/reagants";
+import ForgotPassword from "../pages/forgotPassword";
+import ResetPassword from "../pages/resetPassword";
 // import Glassware from "../pages/Chemistry/Glassware";
 // import Measuring from "../pages/Chemistry/Measuring";
 // import OthersChemistry from "../pages/Chemistry/Others";
@@ -72,13 +76,12 @@ export const Routes = createBrowserRouter([
       },
       {
         path: '/chemistry/chemicals',
-        element: <ChemicalsPage />
+        element: <ChemicalsPage/>
       },
       {
         path: '/chemistry/reagants',
-        element: <ReagantsPage />
+        element: <ReagantsPage/>
       },
-      
 
       // // Physics Routes
       // {
@@ -160,6 +163,16 @@ export const Routes = createBrowserRouter([
   },
   {
     path: '/register',
-    element: <Register />
+    element: <AuthorizedRoute element={<Register />} allowedRoles={['admin']} />
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />
+  },
+  {
+    path: '/reset-password/:token',
+    element: <ResetPassword />
   }
+
+
 ]);

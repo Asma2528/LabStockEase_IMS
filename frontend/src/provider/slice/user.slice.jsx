@@ -1,19 +1,53 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
-const UserSlice = createSlice({
-    name: 'user', // Use 'user' here
-    initialState: {
-        user: null,
-    },
-    reducers: {
-        setUser(state, action) {
-            state.user = action.payload;
-        },
-        removeUser(state) {
-            state.user = null;
-        },
-    },
+// Async thunk to fetch user data
+export const fetchUserData = createAsyncThunk('user/fetchData', async () => {
+  const response = await axios.get('/api/user');
+  return response.data;
 });
-export const { removeUser, setUser } = UserSlice.actions;
-export const UserSlicePath = (state) => state.user.user;
-export default UserSlice.reducer;
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    role: null,
+    name: null,
+    email: null,
+    status: 'idle',
+    error: null,
+  },
+  reducers: {
+    removeUser(state) {
+      state.role = null;
+      state.name = null;
+      state.email = null;
+    },
+    setUser(state, action) {
+      state.role = action.payload.role;
+      state.name = action.payload.name;
+      state.email = action.payload.email;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUserData.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchUserData.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.role = action.payload.role;
+        state.name = action.payload.name;
+        state.email = action.payload.email;
+      })
+      .addCase(fetchUserData.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+  },
+});
+
+export const { removeUser, setUser } = userSlice.actions;
+
+export const UserSlicePath = (state) => state.user;
+
+export default userSlice.reducer;

@@ -12,42 +12,41 @@ const Register = () => {
   const navigate = useNavigate();
   const RecaptchaRef = useRef();
 
-  // Define initial values for the form
   const initialValues = {
     token: '',
-    name: '', // Changed from username to name
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    role: '', // Added role field
   };
 
-  // Define validation schema
   const validationSchema = yup.object({
-    name: yup.string().required("Name is required"), // Changed from username to name
+    name: yup.string().required("Name is required"),
     email: yup.string().email("Email must be valid").required("Email is required"),
     password: yup.string().min(5, "Password must be greater than 5 characters").required("Password is required"),
+    role: yup.string().required("Role is required"), // Validate role field
   });
 
   const OnSubmitHandler = async (values, { resetForm }) => {
-    console.log("Form values:", values); // Log the values
     try {
+
       const { data, error } = await registerUser(values);
+
       if (error) {
         const errorMessage = error.data?.message || "Registration failed";
-        toast.error(`Registration error: ${errorMessage}`); // Improved error handling
+        toast.error(`Registration error: ${errorMessage}`);
         return;
       }
-      console.log(data, error);
       localStorage.setItem("token", data.token);
       toast.success('User Registered Successfully');
       resetForm();
       navigate("/");
     } catch (error) {
-      toast.error(`Caught error: ${error.message || "Unknown error"}`); // Improved error handling
+      toast.error(`Caught error: ${error.message || "Unknown error"}`);
     } finally {
       RecaptchaRef.current.reset();
     }
   };
-  
 
   return (
     <div className='min-h-screen flex items-center justify-center w-full bg-blue-100'>
@@ -78,45 +77,63 @@ const Register = () => {
                 className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
                 placeholder='Enter Email Address'
                 autoComplete='email'
-                  
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='email' />
             </div>
             <div className="mb-3 py-1">
               <label htmlFor="password">Password</label>
               <Field
-                name='password'
                 id='password'
+                name='password'
                 type='password'
                 className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
                 placeholder='********'
-                autoComplete='current-password'
+                autoComplete='new-password'
               />
               <ErrorMessage component={'p'} className='text-red-500 text-sm' name='password' />
             </div>
             <div className="mb-3 py-1">
-            <ReCAPTCHA
-  ref={RecaptchaRef}
-  sitekey={import.meta.env.VITE_SITE_KEY}
-  onChange={(token) => setFieldValue('token', token)}
-/>
+  <label htmlFor="role">Role</label>
+  <Field
+    id='role'
+    name='role'
+    as='select'
+    className='w-full outline-none py-3 px-2 border-[.1px] border-zinc-400 rounded-lg'
+    placeholder='Select Your Role'
+  >
+    <option value=''>Select Role</option>
+    <option value='admin'>Admin</option>
+    <option value='chemistry'>Chemistry</option>
+    <option value='physics'>Physics</option>
+    <option value='biology'>Biology</option>
+    <option value='botany'>Botany</option>
+    <option value='microbiology'>Microbiology</option>
+    <option value='lifescience'>Life Science</option>
+  </Field>
+  <ErrorMessage component={'p'} className='text-red-500 text-sm' name='role' />
+</div>
 
-            </div>
             <div className="mb-3 py-1">
+              <ReCAPTCHA
+                ref={RecaptchaRef}
+                sitekey={import.meta.env.VITE_SITE_KEY}
+                onChange={(token) => {
+                  setFieldValue('token', token);
+                }}
+              />
+            </div>
+            <div className="mb-3 py-1 flex items-center justify-center">
               <Button
                 disabled={!values.token}
                 loading={isLoading}
-                raised
-                type='submit'
                 className='w-full bg-blue-900 text-white py-3 px-2 flex items-center justify-center'
+                type="submit"
               >
                 Register
               </Button>
             </div>
             <div className="mb-3 py-1 flex items-center justify-end">
-              <p className="inline-flex items-center gap-x-1">
-                Already Have An Account? <Link className='font-semibold text-blue-900' to={'/login'}>Login</Link>
-              </p>
+              <p className="inline-flex items-center gap-x-1">Already Have An Account?<Link className='font-semibold text-blue-900' to={'/login'}>Login</Link></p>
             </div>
           </form>
         )}

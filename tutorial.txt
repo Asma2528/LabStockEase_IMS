@@ -117,3 +117,16 @@ inside frontend
 - free of cost
 - Heightened Security: Protect your React Native app from bot-driven attacks, spam, and unauthorized access attempts. User Verification: Confirm the identity of users, ensuring genuine interactions and mitigating automated scripts.
 - CAPTCHA helps protect you from spam and password decryption by asking you to complete a simple test that proves you are human and not a computer trying to break into a password protected account.
+
+
+Nodemailer
+- npm install nodemailer (Inside backend)
+- Nodemailer is a server-side library used to send emails, and it needs to be integrated with your backend where you manage the email sending logic.
+- to send password reset emails.
+
+
+LEFT
+- completing all the departments subitems
+- completing functionality of department dashboard
+- completing main dashboard
+- If time permits - Do report generation in pdf and excel sheet form

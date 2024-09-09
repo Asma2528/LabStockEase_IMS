@@ -1,15 +1,17 @@
+// Auth.service.js
 const httpStatus = require("http-status");
 const { UserModel, ProfileModel } = require("../models");
 const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/Token.utils");
-
 const axios = require("axios");
+
 class AuthService {
   static async RegisterUser(body) {
-    // request
-    const { email, password, name, token } = body;
+    const { email, password, name, role, token } = body;
 
-    // console.log("1---- ",token);
+    if (!role || !['admin', 'chemistry', 'physics', 'biology', 'botany', 'microbiology', 'lifescience'].includes(role)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Valid role is required");
+    }
 
     const response = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify`,
@@ -23,23 +25,21 @@ class AuthService {
     );
 
     const data = await response.data;
-    // console.log("2---- ",JSON.stringify(data));
 
     if (!data.success) {
-
       throw new ApiError(httpStatus.BAD_REQUEST, "Captcha Not Valid");
     }
 
     const checkExist = await UserModel.findOne({ email });
     if (checkExist) {
       throw new ApiError(httpStatus.BAD_REQUEST, "User Already Registered");
-      return;
     }
 
     const user = await UserModel.create({
       email,
       password,
       name,
+      role
     });
 
     const tokend = generateToken(user);
@@ -54,6 +54,7 @@ class AuthService {
       token: tokend,
     };
   }
+
   static async LoginUser(body) {
     const { email, password, token } = body;
 
@@ -69,43 +70,40 @@ class AuthService {
     );
 
     const data = await response.data;
-    // console.log("2---- ",JSON.stringify(data));
 
     if (!data.success) {
-      // console.log("yhhh it works");
-
       throw new ApiError(httpStatus.BAD_REQUEST, "Captcha Not Valid");
     }
+
     const checkExist = await UserModel.findOne({ email });
     if (!checkExist) {
       throw new ApiError(httpStatus.BAD_REQUEST, "User Not Registered");
-      return;
     }
 
     if (password !== checkExist.password) {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid Credentials");
-      return;
     }
 
     const tokend = generateToken(checkExist);
 
     return {
-      msg: "User Login Successfull",
+      msg: "User Login Successful",
       token: tokend,
     };
   }
+
   static async ProfileService(user) {
-    const checkExist = await UserModel.findById(user).select("name email");
+    const checkExist = await UserModel.findById(user.id).select("name email role"); // Use user.id
     if (!checkExist) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "User Not Registered");
-      return;
+        throw new ApiError(httpStatus.BAD_REQUEST, "User Not Registered");
     }
 
     return {
-      msg: "Data fetched",
-      user: checkExist,
+        msg: "Data fetched",
+        user: checkExist,
     };
-  }
+}
+
 }
 
 module.exports = AuthService;

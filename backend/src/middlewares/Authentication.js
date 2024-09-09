@@ -4,7 +4,7 @@ const { validateToken } = require("../utils/Token.utils");
 
 const Authentication = (req, res, next) => {
     try {
-        const headers = req.headers['authorization'] || ''; // Use lowercase 'authorization'
+        const headers = req.headers['authorization'] || '';
         if (!headers || !headers.startsWith("Bearer ")) {
             throw new ApiError(httpStatus.UNAUTHORIZED, "Please login first");
         }
@@ -15,11 +15,11 @@ const Authentication = (req, res, next) => {
         }
 
         const data = validateToken(auth_token);
-        if (!data) {
+        if (!data || !data.userid) {
             throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
         }
 
-        req.user = data.userid; // Set the user info to the request object
+        req.user = { id: data.userid }; // Set only the user ID
         next();
     } catch (error) {
         next(error);
