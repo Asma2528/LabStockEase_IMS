@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const reagantsSchema = new mongoose.Schema({
+const GlasswareSchema = new mongoose.Schema({
     item_name: {
         type: String,
         required: true,
@@ -45,10 +45,6 @@ const reagantsSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    expiration_date: {
-        type: Date,
-        required: true
-    },
     location: {
         type: String,
         required: true,
@@ -71,14 +67,10 @@ const reagantsSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    expiration_alert_date: {
-        type: Date,
-        required: true
-    }
 }, {
     timestamps: true
 });
 
-const ReagantsModel = mongoose.model("ChemistryReagants", reagantsSchema);
+const GlasswareModel = mongoose.model("ChemistryGlassware", GlasswareSchema);
 
-module.exports = ReagantsModel;
+module.exports = GlasswareModel;

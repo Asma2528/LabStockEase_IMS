@@ -127,6 +127,21 @@ Nodemailer
 
 LEFT
 - completing all the departments subitems
-- completing functionality of department dashboard
-- completing main dashboard
-- If time permits - Do report generation in pdf and excel sheet form
+
+
+- completing dashboard
+   - tables
+   - report generation
+
+
+low stock - 14  
+near expiry - 6
+
+tot count - 25
+tot quan - 186  
+
+zero - 10
+most stock - 10
+
+out of stock - 10
+exxpired - 3

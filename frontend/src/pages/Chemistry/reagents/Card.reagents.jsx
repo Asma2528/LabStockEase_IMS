@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
 import { LuView } from 'react-icons/lu';
 import { Button } from 'primereact/button';
-import ViewItem from './display.reagants'; // Import the ViewItem component
-import UpdateItem from './UpdateModel.reagants';
+import ViewItem from './display.reagents'; // Import the ViewItem component
+import UpdateItem from './UpdateModel.reagents';
 
-const ReagantsCard = ({ data, onDelete }) => {
+const ReagentsCard = ({ data, onDelete }) => {
     const [visible, setVisible] = useState(false); // State for controlling the dialog visibility
 
 
@@ -71,7 +71,7 @@ const ReagantsCard = ({ data, onDelete }) => {
 };
 
 // Define PropTypes
-ReagantsCard.propTypes = {
+ReagentsCard.propTypes = {
     data: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         item_name: PropTypes.string.isRequired,
@@ -96,4 +96,4 @@ ReagantsCard.propTypes = {
     onDelete: PropTypes.func.isRequired
 };
 
-export default ReagantsCard;
+export default ReagentsCard;

@@ -42,8 +42,9 @@ const Header = () => {
                     <img src={logo} alt="LabStockEase Logo" className="mx-2 w-6 h-9" />
                     <h1 className='text-xl text-white my-2'>LabStockEase</h1>
                 </div>
+                
                 <div className="end flex gap-4">
-                    <p className="text-sm text-white xs:hidden sm:visible">Hello, {user.name || "Guest"}</p>
+                    <p className="text-sm text-white hidden md:block">Hello, {user.name || "Guest"}</p>
                     <button title='logout' className="-mt-1" onClick={logoutHandler}>
                         <IoLogOutOutline className='text-2xl text-white ' />
                     </button>

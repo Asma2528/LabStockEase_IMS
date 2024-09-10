@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import BreadCrumbs from '../../../components/BreadCrumbs';
-import Model from './model.reagants';
+import Model from './model.reagents';
 import { GoPlus } from "react-icons/go";
-import { useGetAllReagantsItemsQuery } from '../../../provider/queries/Reagants.query';
+import { useGetAllReagentsItemsQuery } from '../../../provider/queries/Reagents.query';
 import Loader from '../../../components/Loader';
-import ReagantsCard from './Card.reagants';
+import ReagentsCard from './Card.reagents';
 import { useNavigate } from 'react-router-dom';
 import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog';
 import { toast } from 'sonner';
 import { Button } from 'primereact/button';
-import { useDeleteReagantsItemMutation } from '../../../provider/queries/Reagants.query';
+import { useDeleteReagentsItemMutation } from '../../../provider/queries/Reagents.query';
 
-const ReagantsPage = () => {
+const ReagentsPage = () => {
     const [visible, setVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -20,17 +20,17 @@ const ReagantsPage = () => {
     const [Search, setSearch] = useState('');
 
     // Fetch all items without pagination
-    const { isLoading, data, isFetching } = useGetAllReagantsItemsQuery({
+    const { isLoading, data, isFetching } = useGetAllReagentsItemsQuery({
         query: Search
     });
 
 
     const onSubmitHandler = (e) => {
         e.preventDefault();
-        navigate(`/Reagants?query=${Search}`);
+        navigate(`/Reagents?query=${Search}`);
     };
 
-    const [DeleteReagantsItem] = useDeleteReagantsItemMutation();
+    const [DeleteReagentsItem] = useDeleteReagentsItemMutation();
 
     const deleteHandler = (_id) => {
     setDialogVisible(true);
@@ -48,7 +48,7 @@ const ReagantsPage = () => {
                     className="p-button-danger rounded-md bg-red-500 text-white inline-flex items-center p-2 justify-center pr-4" 
                     onClick={async () => {
                         try {
-                            const { data, error } = await DeleteReagantsItem(_id);
+                            const { data, error } = await DeleteReagentsItem(_id);
                             if (error) {
                                 toast.error(error.data.message);
                                 return;
@@ -79,7 +79,7 @@ const ReagantsPage = () => {
     return (
         <>
         <div className="w-full flex flex-wrap justify-evenly mt-10">
-            <BreadCrumbs PageLink='/Reagants' PageName='Reagants' />
+            <BreadCrumbs PageLink='/Reagents' PageName='Reagents' />
 
             <div className="mb-3 flex justify-end w-[85%] mx-auto">
                 <button
@@ -123,7 +123,7 @@ const ReagantsPage = () => {
                             <tbody>
                                 {data?.items.length > 0 ? (
                                     data.items.map((c) => (
-                                        <ReagantsCard
+                                        <ReagentsCard
                                             key={c._id}
                                             data={c}
                                             onDelete={() => {
@@ -155,4 +155,4 @@ const ReagantsPage = () => {
     );
 };
 
-export default ReagantsPage;
+export default ReagentsPage;

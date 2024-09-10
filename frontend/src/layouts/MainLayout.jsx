@@ -36,7 +36,7 @@ const MainLayout = ({ children }) => {
             <SubMenu label="Chemistry" icon={<SlChemistry className="text-2xl" />}>
               <MenuItem component={<Link to="/chemistry" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/chemistry/chemicals" />}>Chemicals</MenuItem>
-              <MenuItem component={<Link to="/chemistry/reagants" />}>Reagents</MenuItem>
+              <MenuItem component={<Link to="/chemistry/reagents" />}>Reagents</MenuItem>
               <MenuItem component={<Link to="/chemistry/glassware" />}>Glassware</MenuItem>
               <MenuItem component={<Link to="/chemistry/measuring" />}>Measuring</MenuItem>
               <MenuItem component={<Link to="/chemistry/others" />}>Others</MenuItem>
@@ -95,7 +95,7 @@ const MainLayout = ({ children }) => {
             <SubMenu label="Chemistry" icon={<SlChemistry className="text-2xl" />}>
               <MenuItem component={<Link to="/chemistry" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/chemistry/chemicals" />}>Chemicals</MenuItem>
-              <MenuItem component={<Link to="/chemistry/reagants" />}>Reagents</MenuItem>
+              <MenuItem component={<Link to="/chemistry/reagents" />}>Reagents</MenuItem>
               <MenuItem component={<Link to="/chemistry/glassware" />}>Glassware</MenuItem>
               <MenuItem component={<Link to="/chemistry/measuring" />}>Measuring</MenuItem>
               <MenuItem component={<Link to="/chemistry/others" />}>Others</MenuItem>

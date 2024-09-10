@@ -4,7 +4,7 @@ import { ErrorMessage, Field, Formik } from 'formik';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { toast } from 'sonner';
-import { useUpdateChemicalsItemMutation } from '../../../provider/queries/Chemicals.query';
+import { useUpdateOthersItemMutation } from '../../../provider/queries/Others.query';
 import { format } from 'date-fns';
 
 const UpdateModel = ({ visible, setVisible, item }) => {
@@ -50,7 +50,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
         expiration_alert_date: item?.expiration_alert_date ? format(new Date(item.expiration_alert_date), 'yyyy-MM-dd') : '',
     };
 
-    const [updateChemicalsItem, updateChemicalsResponse] = useUpdateChemicalsItemMutation();
+    const [updateOthersItem, updateOthersResponse] = useUpdateOthersItemMutation();
     
 
     const onSubmitHandler = async (values) => {
@@ -65,7 +65,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
     
      
     
-            const response = await updateChemicalsItem({
+            const response = await updateOthersItem({
                 data: formattedValues,
                 id: item._id,
             });
@@ -242,7 +242,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                         <div className="flex justify-end">
                             <Button
                             type="submit"
-                                loading={updateChemicalsResponse.isLoading}
+                                loading={updateOthersResponse.isLoading}
                                 className="px-4 rounded-md py-2 bg-blue-900 text-white inline-flex items-center gap-x-2">
                                 Update Item
                             </Button>

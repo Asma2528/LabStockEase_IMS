@@ -6,13 +6,17 @@ import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Home from "../pages/Home/index"; 
 import ErrorPage from "../pages/Error";
+import ForgotPassword from "../pages/forgotPassword";
+import ResetPassword from "../pages/resetPassword";
 
 // Chemistry
 import ChemistryPage from "../pages/Chemistry/Home";
 import ChemicalsPage from "../pages/Chemistry/chemicals";
-import ReagantsPage from "../pages/Chemistry/reagants";
-import ForgotPassword from "../pages/forgotPassword";
-import ResetPassword from "../pages/resetPassword";
+import ReagentsPage from "../pages/Chemistry/reagents";
+import GlasswarePage from "../pages/Chemistry/glassware";
+import MeasuringPage from "../pages/Chemistry/measuring";
+import OthersPage from "../pages/Chemistry/others";
+
 // import Glassware from "../pages/Chemistry/Glassware";
 // import Measuring from "../pages/Chemistry/Measuring";
 // import OthersChemistry from "../pages/Chemistry/Others";
@@ -79,10 +83,21 @@ export const Routes = createBrowserRouter([
         element: <ChemicalsPage/>
       },
       {
-        path: '/chemistry/reagants',
-        element: <ReagantsPage/>
+        path: '/chemistry/reagents',
+        element: <ReagentsPage/>
       },
-
+      {
+        path: '/chemistry/glassware',
+        element: <GlasswarePage/>
+      },
+      {
+        path: '/chemistry/measuring',
+        element: <MeasuringPage/>
+      },
+      {
+        path: '/chemistry/others',
+        element: <OthersPage/>
+      },
       // // Physics Routes
       // {
       //   path: '/physics',

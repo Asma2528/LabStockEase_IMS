@@ -4,8 +4,8 @@ import { ErrorMessage, Field, Formik } from 'formik';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { toast } from 'sonner';
-import { useUpdateChemicalsItemMutation } from '../../../provider/queries/Chemicals.query';
-import { format } from 'date-fns';
+import { useUpdateGlasswareItemMutation } from '../../../provider/queries/Glassware.query';
+
 
 const UpdateModel = ({ visible, setVisible, item }) => {
   
@@ -17,17 +17,15 @@ const UpdateModel = ({ visible, setVisible, item }) => {
         purpose: yup.string().required("Purpose is required"),
         BillNo: yup.string().required("Bill Number is required"),
         total_quantity: yup.number().required("Total Quantity is required").positive().integer(),
-        issued_quantity: yup.number().required("Issued Quantity is required").positive().integer(),
+        issued_quantity: yup.number().required("Issued Quantity is required").integer(),
         current_quantity: yup.number().required("Current Quantity is required").positive().integer(),
         min_stock_level: yup.number().required("Minimum Stock Level is required").positive().integer(),
         unit_of_measure: yup.string().required("Unit of Measure is required"),
-        expiration_date: yup.date().required("Expiration Date is required"),
         location: yup.string().required("Location is required"),
         status: yup.string().required("Status is required"),
         description: yup.string(),
         barcode: yup.string(),
         low_stock_alert: yup.boolean(),
-        expiration_alert_date: yup.date().required("Expiration Alert Date is required")
     });
 
     // Set initial values, handling cases where item might be undefined
@@ -41,16 +39,15 @@ const UpdateModel = ({ visible, setVisible, item }) => {
         current_quantity: item?.current_quantity || 0,
         min_stock_level: item?.min_stock_level || 0,
         unit_of_measure: item?.unit_of_measure || '',
-        expiration_date: item?.expiration_date ? format(new Date(item.expiration_date), 'yyyy-MM-dd') : '',
         location: item?.location || '',
         status: item?.status || '',
         description: item?.description || '',
         barcode: item?.barcode || '',
         low_stock_alert: item?.low_stock_alert || false,
-        expiration_alert_date: item?.expiration_alert_date ? format(new Date(item.expiration_alert_date), 'yyyy-MM-dd') : '',
+
     };
 
-    const [updateChemicalsItem, updateChemicalsResponse] = useUpdateChemicalsItemMutation();
+    const [updateGlasswareItem, updateGlasswareResponse] = useUpdateGlasswareItemMutation();
     
 
     const onSubmitHandler = async (values) => {
@@ -58,14 +55,12 @@ const UpdateModel = ({ visible, setVisible, item }) => {
          
 
             const formattedValues = {
-                ...values,
-                expiration_date: new Date(values.expiration_date).toISOString(),
-                expiration_alert_date: new Date(values.expiration_alert_date).toISOString(),
+                ...values
             };
     
      
     
-            const response = await updateChemicalsItem({
+            const response = await updateGlasswareItem({
                 data: formattedValues,
                 id: item._id,
             });
@@ -159,7 +154,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                                 as="select"
                                 className="w-full px-5 py-2 rounded-md outline-none border-1 border"
                             >
-                                      <option value="" label="Select unit" />
+                        <option value="" label="Select unit" />
                                 <option value="ml" label="Milliliter (ml)" />
                                 <option value="l" label="Liter (l)" />
                                 <option value="g" label="Gram (g)" />
@@ -179,12 +174,6 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                         </div>
 
 
-                            {/* Expiration Date */}
-                            <div className="mb-3">
-                                <label htmlFor="expiration_date">Expiration Date <span className="text-red-500 text-sm">*</span></label>
-                                <Field name="expiration_date" id="expiration_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                                <ErrorMessage name='expiration_date' component={'p'} className='text-red-500 text-sm' />
-                            </div>
 
                             {/* Location */}
                             <div className="mb-3">
@@ -232,17 +221,11 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                             </div>
 
 
-                            <div className="mb-3">
-                                <label htmlFor="expiration_alert_date">Expiration Alert Date</label>
-                                <Field name="expiration_alert_date" id="expiration_alert_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                                <ErrorMessage name='expiration_alert_date' component={'p'} className='text-red-500 text-sm' />
-                            </div>
-
 
                         <div className="flex justify-end">
                             <Button
                             type="submit"
-                                loading={updateChemicalsResponse.isLoading}
+                                loading={updateGlasswareResponse.isLoading}
                                 className="px-4 rounded-md py-2 bg-blue-900 text-white inline-flex items-center gap-x-2">
                                 Update Item
                             </Button>
@@ -269,13 +252,11 @@ UpdateModel.propTypes = {
         current_quantity: PropTypes.number,
         min_stock_level: PropTypes.number,
         unit_of_measure: PropTypes.string,
-        expiration_date: PropTypes.string,
         location: PropTypes.string,
         status: PropTypes.string,
         description: PropTypes.string,
         barcode: PropTypes.string,
         low_stock_alert: PropTypes.bool,
-        expiration_alert_date: PropTypes.string,
     }),
 };
 

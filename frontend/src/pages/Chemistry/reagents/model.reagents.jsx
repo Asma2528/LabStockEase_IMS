@@ -4,10 +4,10 @@ import * as yup from 'yup';
 import { Button } from 'primereact/button';
 import { toast } from 'sonner';
 import PropTypes from 'prop-types';
-import { useAddChemicalsItemMutation } from '../../../provider/queries/Chemicals.query';
+import { useAddReagentsItemMutation } from '../../../provider/queries/Reagents.query';
 
 const Model = ({ visible, setVisible }) => {
-    const [addChemicalsItem, { isLoading }] = useAddChemicalsItemMutation();
+    const [addReagentsItem, { isLoading }] = useAddReagentsItemMutation();
 
     const today = new Date();
     const validationSchema = yup.object({
@@ -50,12 +50,12 @@ const Model = ({ visible, setVisible }) => {
 
     const onSubmitHandler = async (values, { resetForm }) => {
         try {
-            const response = await addChemicalsItem(values);
+            const response = await addReagentsItem(values);
             if (response.error) {
                 toast.error(response.error.data.message || 'Failed to add item');
                 return;
             }
-            toast.success("Chemicals Item Added Successfully");
+            toast.success("Reagents Item Added Successfully");
             resetForm();
             setVisible(false);
         } catch (e) {
@@ -140,12 +140,6 @@ const Model = ({ visible, setVisible }) => {
                                 <option value="l" label="Liter (l)" />
                                 <option value="g" label="Gram (g)" />
                                 <option value="kg" label="Kilogram (kg)" />
-                                <option value="m^3" label="Cubic Meter (m³)" />
-                                <option value="pcs" label="Pieces (pcs)" />
-                                <option value="sets" label="Sets" />
-                                <option value="boxes" label="Boxes" />
-                                <option value="packs" label="Packs" />
-                                <option value="meters" label="Meters (m) " />
                             </Field>
                             <ErrorMessage
                                 name="unit_of_measure"

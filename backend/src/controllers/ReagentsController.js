@@ -1,23 +1,23 @@
 const httpStatus = require("http-status");
 const CatchAsync = require("../utils/CatchAsync");
-const ReagantsService = require("../services/Reagants.service");
+const ReagentsService = require("../services/Reagents.service");
 
-class ReagantsController {
-    // Register a new Reagants item
-    static RegisterReagantsItem = CatchAsync(async (req, res) => {
-        const res_obj = await ReagantsService.RegisterReagantsItem(req?.user, req.body);
+class ReagentsController {
+    // Register a new Reagents item
+    static RegisterReagentsItem = CatchAsync(async (req, res) => {
+        const res_obj = await ReagentsService.RegisterReagentsItem(req?.user, req.body);
         return res.status(httpStatus.CREATED).json(res_obj);
     });
 
-    // Update a Reagants item by its ID
+    // Update a Reagents item by its ID
     static updateById = CatchAsync(async (req, res) => {
         console.log("Before cont")
-        const res_obj = await ReagantsService.UpdateReagantsItemById(req?.user, req.body, req.params.id);
+        const res_obj = await ReagentsService.UpdateReagentsItemById(req?.user, req.body, req.params.id);
         console.log("After cont")
         return res.status(httpStatus.OK).json(res_obj);
     });
 
-    // Get a Reagants item by its ID
+    // Get a Reagents item by its ID
     static getById = CatchAsync(async (req, res) => {
         const { id } = req.params;
     
@@ -27,19 +27,19 @@ class ReagantsController {
         }
     
     
-        // Call the service method to get the Reagants item
-        const res_obj = await ReagantsService.getById(id);
+        // Call the service method to get the Reagents item
+        const res_obj = await ReagentsService.getById(id);
     
         return res.status(httpStatus.OK).json(res_obj);
     });
 
 
 
-    // Get all Reagants items with pagination
+    // Get all Reagents items with pagination
     static GetAllItems = CatchAsync(async (req, res) => {
         try {
             const query = req.query.query || ''; // handle optional query parameter
-            const result = await ReagantsService.GetAllItems(query); // Call the service method
+            const result = await ReagentsService.GetAllItems(query); // Call the service method
             res.json(result);
         } catch (error) {
             console.error('Error fetching items:', error); // Log the error to the server console
@@ -47,18 +47,18 @@ class ReagantsController {
         }
     });         
 
-    // Delete a Reagants item by its ID
-    static DeleteReagantsItem = CatchAsync(async (req, res) => {
-        const res_obj = await ReagantsService.DeleteReagantsItem(req?.user, req.params.id);
+    // Delete a Reagents item by its ID
+    static DeleteReagentsItem = CatchAsync(async (req, res) => {
+        const res_obj = await ReagentsService.DeleteReagentsItem(req?.user, req.params.id);
     
         return res.status(httpStatus.OK).json(res_obj);
     });
     
-    static GetReagantsItemForSearch= CatchAsync(async(req,res)=>{
-        const res_obj  = await ReagantsService.GetReagantsItemForSearch(req?.user);
+    static GetReagentsItemForSearch= CatchAsync(async(req,res)=>{
+        const res_obj  = await ReagentsService.GetReagentsItemForSearch(req?.user);
         return    res.status(httpStatus.OK).json(res_obj)
 
     })
 }
 
-module.exports = ReagantsController;
+module.exports = ReagentsController;

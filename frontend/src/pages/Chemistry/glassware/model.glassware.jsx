@@ -4,12 +4,12 @@ import * as yup from 'yup';
 import { Button } from 'primereact/button';
 import { toast } from 'sonner';
 import PropTypes from 'prop-types';
-import { useAddChemicalsItemMutation } from '../../../provider/queries/Chemicals.query';
+import { useAddGlasswareItemMutation } from '../../../provider/queries/Glassware.query';
 
 const Model = ({ visible, setVisible }) => {
-    const [addChemicalsItem, { isLoading }] = useAddChemicalsItemMutation();
+    const [addGlasswareItem, { isLoading }] = useAddGlasswareItemMutation();
 
-    const today = new Date();
+
     const validationSchema = yup.object({
         item_name: yup.string().required("Item name is required"),
         company: yup.string().required("Company/Brand is required"),
@@ -20,13 +20,11 @@ const Model = ({ visible, setVisible }) => {
         current_quantity: yup.number().required("Current quantity is required").positive().integer(),
         min_stock_level: yup.number().required("Minimum stock level is required").positive().integer(),
         unit_of_measure: yup.string().required("Unit of measurement is required"),
-        expiration_date: yup.date().required("Expiration date is required"),
         location: yup.string().required("Location is required"),
         status: yup.string(),
         description: yup.string(),
         barcode: yup.string(),
         low_stock_alert: yup.boolean(),
-        expiration_alert_date: yup.date().required("Expiration alert date is required"),
     });
 
     const initialValues = {
@@ -39,23 +37,21 @@ const Model = ({ visible, setVisible }) => {
         current_quantity: 0,
         min_stock_level: 0,
         unit_of_measure: '',
-        expiration_date: today.toISOString().split('T')[0], // Convert to 'YYYY-MM-DD'
         location: '',
         status: '',
         description: '',
         barcode: '',
         low_stock_alert: true,
-        expiration_alert_date: today.toISOString().split('T')[0] // Convert to 'YYYY-MM-DD'
     };
 
     const onSubmitHandler = async (values, { resetForm }) => {
         try {
-            const response = await addChemicalsItem(values);
+            const response = await addGlasswareItem(values);
             if (response.error) {
                 toast.error(response.error.data.message || 'Failed to add item');
                 return;
             }
-            toast.success("Chemicals Item Added Successfully");
+            toast.success("Glassware Item Added Successfully");
             resetForm();
             setVisible(false);
         } catch (e) {
@@ -135,7 +131,7 @@ const Model = ({ visible, setVisible }) => {
                                 as="select"
                                 className="w-full px-5 py-2 rounded-md outline-none border-1 border"
                             >
-                                <option value="" label="Select unit" />
+                                         <option value="" label="Select unit" />
                                 <option value="ml" label="Milliliter (ml)" />
                                 <option value="l" label="Liter (l)" />
                                 <option value="g" label="Gram (g)" />
@@ -154,12 +150,7 @@ const Model = ({ visible, setVisible }) => {
                             />
                         </div>
 
-                        {/* Expiration Date */}
-                        <div className="mb-3">
-                            <label htmlFor="expiration_date">Expiration Date <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="expiration_date" id="expiration_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                            <ErrorMessage name='expiration_date' component={'p'} className='text-red-500 text-sm' />
-                        </div>
+              
 
                         {/* Location */}
                         <div className="mb-3">
@@ -212,11 +203,6 @@ const Model = ({ visible, setVisible }) => {
                         </div>
 
 
-                        <div className="mb-3">
-                            <label htmlFor="expiration_alert_date">Expiration Alert Date</label>
-                            <Field name="expiration_alert_date" id="expiration_alert_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                            <ErrorMessage name='expiration_alert_date' component={'p'} className='text-red-500 text-sm' />
-                        </div>
 
                         <Button type="submit" className='w-full bg-blue-900 text-center text-white py-3 flex items-center justify-center' disabled={isLoading}>
                             {isLoading ? 'Adding...' : 'Add Item'}

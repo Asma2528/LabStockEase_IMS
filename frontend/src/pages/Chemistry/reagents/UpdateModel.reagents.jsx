@@ -4,7 +4,7 @@ import { ErrorMessage, Field, Formik } from 'formik';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { toast } from 'sonner';
-import { useUpdateChemicalsItemMutation } from '../../../provider/queries/Chemicals.query';
+import { useUpdateReagentsItemMutation } from '../../../provider/queries/Reagents.query';
 import { format } from 'date-fns';
 
 const UpdateModel = ({ visible, setVisible, item }) => {
@@ -50,7 +50,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
         expiration_alert_date: item?.expiration_alert_date ? format(new Date(item.expiration_alert_date), 'yyyy-MM-dd') : '',
     };
 
-    const [updateChemicalsItem, updateChemicalsResponse] = useUpdateChemicalsItemMutation();
+    const [updateReagentsItem, updateReagentsResponse] = useUpdateReagentsItemMutation();
     
 
     const onSubmitHandler = async (values) => {
@@ -65,7 +65,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
     
      
     
-            const response = await updateChemicalsItem({
+            const response = await updateReagentsItem({
                 data: formattedValues,
                 id: item._id,
             });
@@ -159,17 +159,11 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                                 as="select"
                                 className="w-full px-5 py-2 rounded-md outline-none border-1 border"
                             >
-                                      <option value="" label="Select unit" />
+                                <option value="" label="Select unit" />
                                 <option value="ml" label="Milliliter (ml)" />
                                 <option value="l" label="Liter (l)" />
                                 <option value="g" label="Gram (g)" />
                                 <option value="kg" label="Kilogram (kg)" />
-                                <option value="m^3" label="Cubic Meter (m³)" />
-                                <option value="pcs" label="Pieces (pcs)" />
-                                <option value="sets" label="Sets" />
-                                <option value="boxes" label="Boxes" />
-                                <option value="packs" label="Packs" />
-                                <option value="meters" label="Meters (m) " />
                             </Field>
                             <ErrorMessage
                                 name="unit_of_measure"
@@ -242,7 +236,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                         <div className="flex justify-end">
                             <Button
                             type="submit"
-                                loading={updateChemicalsResponse.isLoading}
+                                loading={updateReagentsResponse.isLoading}
                                 className="px-4 rounded-md py-2 bg-blue-900 text-white inline-flex items-center gap-x-2">
                                 Update Item
                             </Button>

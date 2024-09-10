@@ -27,6 +27,7 @@ const HomePage = () => {
     return (
         <div>
             <div className="w-full flex flex-wrap justify-evenly mt-10">
+       
 
                 <div className="w-full flex justify-end mb-10 mr-10 font-normal">
                     <div className="card bg-slate-300 rounded-lg p-2 ">

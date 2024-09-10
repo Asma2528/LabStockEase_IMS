@@ -1,81 +1,81 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const ReagantsApi = createApi({
-    reducerPath: 'ReagantsApi',
+export const ReagentsApi = createApi({
+    reducerPath: 'ReagentsApi',
     baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BACKEND_URL }),
 
-    tagTypes: ['getAllReagantsItems', 'getReagantsItem'],
+    tagTypes: ['getAllReagentsItems', 'getReagentsItem'],
     endpoints: (builder) => ({
-        addReagantsItem: builder.mutation({
+        addReagentsItem: builder.mutation({
             query: (item) => ({
-                url: '/reagants/register', // Updated to match backend route
+                url: '/reagents/register', // Updated to match backend route
                 method: 'POST',
                 body: item,
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            invalidatesTags: ['getAllReagantsItems']
+            invalidatesTags: ['getAllReagentsItems']
         }),
-        getAllReagantsItems: builder.query({
+        getAllReagentsItems: builder.query({
             query: (obj) => ({
-                url: `/reagants/get-all?query=${obj.query}`, // Removed pagination parameters
+                url: `/reagents/get-all?query=${obj.query}`, // Removed pagination parameters
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            providesTags: ['getAllReagantsItems'],
+            providesTags: ['getAllReagentsItems'],
         }),
-        getForSearchReagantsItem: builder.query({
+        getForSearchReagentsItem: builder.query({
             query: () => ({
-                url: `/reagants/get-search`,
+                url: `/reagents/get-search`,
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("token")
                 }
             }),
-            providesTags: ['getAllReagantsItems']
+            providesTags: ['getAllReagentsItems']
         }),
-        deleteReagantsItem: builder.mutation({
+        deleteReagentsItem: builder.mutation({
             query: (id) => ({
-                url: `/reagants/delete/${id}`,
+                url: `/reagents/delete/${id}`,
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            invalidatesTags: ['getAllReagantsItems'],
+            invalidatesTags: ['getAllReagentsItems'],
         }),
-        getReagantsItem: builder.query({
+        getReagentsItem: builder.query({
             query: (id) => ({
-                url: `/reagants/get/${id}`,
+                url: `/reagents/get/${id}`,
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            providesTags: ['getReagantsItem'],
+            providesTags: ['getReagentsItem'],
         }),
-        updateReagantsItem: builder.mutation({
+        updateReagentsItem: builder.mutation({
             query: ({ data,id }) => ({
-                url: `/reagants/update/${id}`,
+                url: `/reagents/update/${id}`,
                 method: 'PATCH',
                 body: data,
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 },
             }),
-            invalidatesTags: ['getAllReagantsItems', 'getReagantsItem'],
+            invalidatesTags: ['getAllReagentsItems', 'getReagentsItem'],
         }),
     }),
 });
 
 export const {
-    useAddReagantsItemMutation,
-    useGetAllReagantsItemsQuery,
-    useDeleteReagantsItemMutation,
-    useGetReagantsItemQuery,
-    useUpdateReagantsItemMutation,
-    useGetForSearchReagantsItemQuery
-} = ReagantsApi;
+    useAddReagentsItemMutation,
+    useGetAllReagentsItemsQuery,
+    useDeleteReagentsItemMutation,
+    useGetReagentsItemQuery,
+    useUpdateReagentsItemMutation,
+    useGetForSearchReagentsItemQuery
+} = ReagentsApi;

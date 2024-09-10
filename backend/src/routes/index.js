@@ -7,33 +7,30 @@ const routes = [
         route: require("./Auth.route")
     },
     {
+        path: '/chemistry-dashboard',
+        route: require("./Chemistry.dashboard.route")
+    },
+    {
         path: '/chemicals',
         route: require("./Chemicals.route")
     },
     {
-        path: '/reagants',
-        route: require("./Reagants.route")
+        path: '/reagents',
+        route: require("./Reagents.route")
     },
-    // {
-    //     path: '/physics',
-    //     route: require("./Physics.route")
-    // },
-    // {
-    //     path: '/biology',
-    //     route: require("./Biology.route")
-    // },
-    // {
-    //     path: '/botany',
-    //     route: require("./Botany.route")
-    // },
-    // {
-    //     path: '/microbiology',
-    //     route: require("./Microbiology.route")
-    // },
-    // {
-    //     path: '/lifescience',
-    //     route: require("./LifeScience.route")
-    // }
+    {
+        path: '/glassware',
+        route: require("./Glassware.route")
+    },
+    {
+        path: '/measuring',
+        route: require("./Measuring.route")
+    },
+    {
+        path: '/others',
+        route: require("./Others.route")
+    }
+    // Add other routes here as needed
 ];
 
 // Loop through the routes and use them in the router
