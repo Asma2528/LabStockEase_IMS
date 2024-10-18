@@ -7,8 +7,8 @@ class MeasuringService {
     // Register a new Measuring item
     static async RegisterMeasuringItem(user, body) {
         const {
-            item_name, company, purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,location, status, description,
+            item_code, item_name, company, purpose, BillNo, total_quantity,
+            current_quantity, min_stock_level, unit_of_measure,location, status, description,
             barcode, low_stock_alert
         } = body;
 
@@ -18,9 +18,10 @@ class MeasuringService {
             throw new ApiError(httpStatus.BAD_REQUEST, "Measuring item already exists in the record");
         }
 
+
         await MeasuringModel.create({
-            item_name, company,  purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,
+            item_code, item_name, company,  purpose, BillNo,  total_quantity: updatedTotalQuantity, 
+            current_quantity: updatedCurrentQuantity,min_stock_level, unit_of_measure,
              location, status, description,
             barcode, low_stock_alert,  user
         });
@@ -79,6 +80,7 @@ static async GetAllItems(query = '') {
         // Build the search query
         const queries = {
             $or: [
+                { item_code: regexQuery },
                 { item_name: regexQuery },
                 { company: regexQuery },
                 { purpose: regexQuery },
@@ -92,7 +94,7 @@ static async GetAllItems(query = '') {
 
         // Retrieve filtered items
         const data = await MeasuringModel.find(queries)
-            .select("item_name company createdAt purpose BillNo total_quantity issued_quantity current_quantity min_stock_level unit_of_measure updatedAt  location status description barcode low_stock_alert ");
+            .select("item_code item_name company createdAt purpose BillNo total_quantity  current_quantity min_stock_level unit_of_measure updatedAt  location status description barcode low_stock_alert ");
 
 
            
@@ -113,8 +115,8 @@ static async GetAllItems(query = '') {
     // Update a Measuring item by its ID
     static async UpdateMeasuringItemById(user,body, id) {
         const {
-            item_name, company, purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,
+            item_code, item_name, company, purpose, BillNo, total_quantity,
+            current_quantity, min_stock_level, unit_of_measure,
             location, status, description,
             barcode, low_stock_alert,
         } = body;
@@ -125,6 +127,11 @@ static async GetAllItems(query = '') {
             throw new ApiError(httpStatus.NOT_FOUND, "Measuring item not found");
         }
 
+                 // Calculate the new total and current quantities
+    const updatedTotalQuantity = existingItem.current_quantity + total_quantity;
+    const updatedCurrentQuantity = updatedTotalQuantity;
+
+
         if (existingItem.barcode !== barcode) {
             const checkExistBarcode = await MeasuringModel.findOne({ barcode });
 
@@ -134,8 +141,8 @@ static async GetAllItems(query = '') {
         }
 
         await MeasuringModel.findByIdAndUpdate(id, {
-            item_name, company,  purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,
+            item_code, item_name, company,  purpose, BillNo,  total_quantity: updatedTotalQuantity, 
+            current_quantity: updatedCurrentQuantity, min_stock_level, unit_of_measure,
              location, status, description,
             barcode, low_stock_alert
         }, { new: true });
@@ -146,7 +153,7 @@ static async GetAllItems(query = '') {
     // Get Measuring items for search
     static async GetMeasuringItemForSearch() {
         const data = await MeasuringModel.find({})
-            .select("item_name company barcode");
+            .select("item_code item_name company barcode");
         
             
 

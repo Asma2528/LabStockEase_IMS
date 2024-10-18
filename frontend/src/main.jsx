@@ -7,15 +7,21 @@ import { Provider } from 'react-redux';
 import { store } from './provider/Store.jsx';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
-import { Toaster} from 'sonner'
+import { Toaster } from 'sonner';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Create a QueryClient instance
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-     <PrimeReactProvider>
-      <Provider store={store}>
-      <Toaster position='top-center' richColors closeButton />
-        <RouterProvider router={Routes} />
-      </Provider>
-    </PrimeReactProvider>
+    <QueryClientProvider client={queryClient}>
+      <PrimeReactProvider>
+        <Provider store={store}>
+          <Toaster position='top-center' richColors closeButton />
+          <RouterProvider router={Routes} />
+        </Provider>
+      </PrimeReactProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

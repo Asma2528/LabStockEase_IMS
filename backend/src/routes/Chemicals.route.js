@@ -25,4 +25,20 @@ router.delete("/delete/:id", ChemicalsValidation.Params_id, Validation, Chemical
 
 router.get("/get-search", ChemicalsController.GetChemicalsItemForSearch);
 
+
+router.post(
+    "/register-log",
+    ChemicalsValidation.LogIssuedQuantity,  // Validation for logging quantity
+    Validation,  // General validation middleware
+    ChemicalsController.LogIssuedQuantity  // Controller to handle logging
+  );
+
+  router.get("/get-all-logs", ChemicalsController.GetLogs);
+
+  router.get("/get-search-log", ChemicalsController.SearchLogs);
+
+  router.patch("/update-log/:id",  ChemicalsValidation.LogIssuedQuantity, Validation, ChemicalsController.updateLogById);
+
+  router.delete("/delete-log/:id", ChemicalsValidation.Params_id, Validation, ChemicalsController.DeleteChemicalsLogItem);
+
 module.exports = router;

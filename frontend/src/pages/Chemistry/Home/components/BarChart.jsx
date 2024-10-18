@@ -15,14 +15,7 @@ export default function BasicChart() {
     const glasswareSummary = dashboardData.glasswareSummary || {};
     const measuringSummary = dashboardData.measuringSummary || {};
     const othersSummary = dashboardData.othersSummary || {};
-
-    if (isLoading) return <div>Loading...</div>;
-    if (error) {
-        toast.error("Error fetching dashboard data");
-        console.error(error);
-        return <div>Error fetching data</div>;
-    }
-
+    
     useEffect(() => {
         const data = {
             labels: ['Chemicals', 'Reagents', 'Glassware', 'Measuring', 'Others'],
@@ -61,11 +54,18 @@ export default function BasicChart() {
                 }
             }
         };
-
+        
         setChartData(data);
         setChartOptions(options);
     }, [chemicalsSummary.totalQuantity, reagentsSummary.totalQuantity, glasswareSummary.totalQuantity, measuringSummary.totalQuantity, othersSummary.totalQuantity]);
-
+    
+    
+        if (isLoading) return <div>Loading...</div>;
+        if (error) {
+            toast.error("Error fetching dashboard data");
+            console.error(error);
+            return <div>Error fetching data</div>;
+        }
     return (
         <Chart type="bar" className='w-full lg:w-1/2' data={chartData} options={chartOptions} />
     );

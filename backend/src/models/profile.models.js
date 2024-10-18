@@ -1,5 +1,5 @@
 // This file is used for refresh token
-// For eg: if a user is logged in in a website. After few days
+// For eg: if a user is logged in in a website. After few days they need to relogin
 
 const mongoose = require("mongoose");
 
@@ -15,7 +15,7 @@ const Schema = new mongoose.Schema({
     }
 },{timestamps:true})
 
-// Any middleware will come between the schema and the model (Dont put it anywhere else)
+// Any middleware will come between the schema and the model 
 
 const model = mongoose.model("profile",Schema);
 module.exports = model;

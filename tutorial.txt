@@ -125,13 +125,18 @@ Nodemailer
 - to send password reset emails.
 
 
-LEFT
-- completing all the departments subitems
+- react-to-pdf
+npm install --save react-to-pdf
+Ease of Use: It works by capturing the rendered HTML component and converting it to a PDF, making it very simple to implement for static content.
+WYSIWYG: Since it captures what is rendered on the screen, the output will look exactly like the content on your page.
+No manual layout: You don’t need to manually code the layout, styles, and positions. It will capture your React component’s structure as-is.
 
 
-- completing dashboard
-   - tables
-   - report generation
+npm install react-select 
+ - for drodown search and own field values
+
+npm install @tanstack/react-query
+- for automatic refresh
 
 
 low stock - 14  
@@ -145,3 +150,36 @@ most stock - 10
 
 out of stock - 10
 exxpired - 3
+
+
+cost estimation
+
+Number of User Input	
+92  
+		
+Number of User Outputs	
+25
+		
+Number of User Inquiries	
+5
+		
+Number of Files	
+443
+		
+Number of External Interfaces	
+
+
+Things to be done:
+- check logic of logs (for the quanities changing)
+- make implementation documentation and dissertation and mail sir 
+
+- search functionality of logs
+
+
+
+
+
+Later on to do if time is there:
+- list of chemical names and item code 
+- null values for expiration date
+- on view item one more interface which displays logs of that particular item

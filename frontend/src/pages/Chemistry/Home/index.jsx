@@ -2,34 +2,13 @@ import { useGetDashboardDataQuery } from '../../../provider/queries/Chemistry.da
 import BarChart from "./components/BarChart";
 import PieChart from "./components/PieChart";
 import BreadCrumbs from '../../../components/BreadCrumbs';
-import { useRef } from 'react';
-import { SplitButton } from 'primereact/splitbutton';
 import { toast } from 'sonner';
+import ReportButton from './components/ReportButton';
 
 const HomePage = () => {
-    const toastRef = useRef(null);
-
+ 
     const { data: dashboardData = {}, error, isLoading } = useGetDashboardDataQuery();
-
-    const items = [
-        {
-            label: 'Excel Sheet',
-            command: () => {
-                toastRef.current.show({ severity: 'success', summary: 'Excel Sheet', detail: 'Data Downloaded' });
-            }
-        },
-        {
-            label: 'Pdf',
-            command: () => {
-                toastRef.current.show({ severity: 'warn', summary: 'Pdf', detail: 'Data Downloaded' });
-            }
-        }
-    ];
-
-    const save = () => {
-        toastRef.current.show({ severity: 'success', summary: 'Success', detail: 'Data Saved' });
-    };
-
+    
     if (isLoading) return <div>Loading...</div>;
     if (error) {
         toast.error("Error fetching dashboard data");
@@ -37,35 +16,49 @@ const HomePage = () => {
         return <div>Error fetching data</div>;
     }
 
-    console.log("Dashboard Data:", dashboardData);
+    const formatDate = (dateString) => {
+ 
+        const date = new Date(dateString);
 
-    // Extract the necessary summaries from the data
-    const chemicalsSummary = dashboardData.chemicalsSummary || {};
-    const reagentsSummary = dashboardData.reagentsSummary || {};
-    const glasswareSummary = dashboardData.glasswareSummary || {};
-    const measuringSummary = dashboardData.measuringSummary || {};
-    const othersSummary = dashboardData.othersSummary || {};
+    
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date:", dateString); // Log if date parsing fails
+            return "Invalid Date";
+        }
+    
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long', // 'short' for abbreviated month
+            day: 'numeric'
+        });
+    };
 
-    // Calculate total items and quantities
+    const {
+        chemicalsSummary = {},
+        reagentsSummary = {},
+        glasswareSummary = {},
+        measuringSummary = {},
+        othersSummary = {},
+        lowStockCount = 'N/A',
+        nearExpiryCount = 'N/A',
+        zeroStockCount = 'N/A',
+        expiredItemsCount = 'N/A',
+        inStockCount = 'N/A',
+        lowStockItems = [],
+        nearExpiryItems = [],
+    } = dashboardData;
+
     const totalItemsCount = chemicalsSummary.totalCount + reagentsSummary.totalCount + glasswareSummary.totalCount + measuringSummary.totalCount + othersSummary.totalCount || 0;
     const totalItemsQuantity = chemicalsSummary.totalQuantity + reagentsSummary.totalQuantity + glasswareSummary.totalQuantity + measuringSummary.totalQuantity + othersSummary.totalQuantity || 0;
 
-    // Use the data directly for the remaining metrics
-    const lowStockCount = dashboardData.lowStockCount || 'N/A';
-    const nearExpiryCount = dashboardData.nearExpiryCount || 'N/A';
-    const zeroStockCount = dashboardData.zeroStockCount || 'N/A';
-    const expiredItemsCount = dashboardData.expiredItemsCount || 'N/A';
-    const inStockCount = dashboardData.inStockCount || 'N/A';
 
     return (
         <div>
             <div className="w-full flex flex-wrap justify-evenly mt-10">
                 <BreadCrumbs PageLink='/Chemicals' PageName='Chemicals' />
 
-                <div className="w-full flex justify-end mb-10 mr-10 font-normal">
-                    <div className="card bg-slate-300 rounded-lg p-2">
-                        <SplitButton label="Download Reports" icon="pi pi-plus" onClick={save} model={items} />
-                    </div>
+                <div className="w-full flex justify-end mb-10 font-normal">
+                    <ReportButton />
                 </div>
 
                 <div className="cards w-full flex flex-wrap gap-x-16 ml-10">
@@ -125,16 +118,26 @@ const HomePage = () => {
                         <thead className="text-xs text-black border-b uppercase bg-gray-50">
                             <tr className="border-b">
                                 <th scope="col" className="px-4 py-2">Item Name</th>
+                                <th scope="col" className="px-4 py-2">Unit Of Measure</th>
                                 <th scope="col" className="px-4 py-2">Location</th>
                                 <th scope="col" className="px-4 py-2">Barcode</th>
                                 <th scope="col" className="px-4 py-2">Total Quantity</th>
                                 <th scope="col" className="px-4 py-2">Current Quantity</th>
                                 <th scope="col" className="px-4 py-2">Minimum Stock Level</th>
-                                <th scope="col" className="px-4 py-2">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {/* Render Low Stock Items here */}
+                            {lowStockItems.map(item => (
+                                <tr key={item._id}>
+                                    <td className="px-4 py-2">{item.item_name}</td>
+                                    <td className="px-4 py-2">{item.unit_of_measure}</td>
+                                    <td className="px-4 py-2">{item.location}</td>
+                                    <td className="px-4 py-2">{item.barcode}</td>
+                                    <td className="px-4 py-2">{item.total_quantity}</td>
+                                    <td className="px-4 py-2">{item.current_quantity}</td>
+                                    <td className="px-4 py-2">{item.min_stock_level}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -147,20 +150,33 @@ const HomePage = () => {
                         <thead className="text-xs text-black border-b uppercase bg-gray-50">
                             <tr className="border-b">
                                 <th scope="col" className="px-4 py-2">Item Name</th>
+                                <th scope="col" className="px-4 py-2">Unit Of Measure</th>
                                 <th scope="col" className="px-4 py-2">Location</th>
                                 <th scope="col" className="px-4 py-2">Barcode</th>
                                 <th scope="col" className="px-4 py-2">Total Quantity</th>
                                 <th scope="col" className="px-4 py-2">Current Quantity</th>
+                                <th scope="col" className="px-4 py-2">Minimum Stock Level</th>
                                 <th scope="col" className="px-4 py-2">Expiration Date</th>
-                                <th scope="col" className="px-4 py-2">Expiration Alert Date</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {/* Render Near Expiry Items here */}
+                            {nearExpiryItems.map(item => (
+                                <tr key={item._id}>
+                                    <td className="px-4 py-2">{item.item_name}</td>
+                                    <td className="px-4 py-2">{item.unit_of_measure}</td>
+                                    <td className="px-4 py-2">{item.location}</td>
+                                    <td className="px-4 py-2">{item.barcode}</td>
+                                    <td className="px-4 py-2">{item.total_quantity}</td>
+                                    <td className="px-4 py-2">{item.current_quantity}</td>
+                                    <td className="px-4 py-2">{item.min_stock_level}</td>
+                                    <td className="px-4 py-2">{formatDate(item.expiration_date)}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     );
 };

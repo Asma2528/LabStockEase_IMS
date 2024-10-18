@@ -30,7 +30,19 @@ const ViewItem = ({ visible, setVisible, item }) => {
             onHide={() => setVisible(false)}
             draggable={false}
         >
-            <div className="w-full">
+          <div className="w-full">
+                    {/* Item Code */}
+                    <div className="mb-3">
+                    <label htmlFor="item_code">Item Code </label>
+                    <input
+                        id="item_code"
+                        type="text"
+                        className="w-full px-5 py-2 rounded-md outline-none border-1 border"
+                        value={item.item_code}
+                        disabled
+                    />
+                </div>
+
                 {/* Item Name */}
                 <div className="mb-3">
                     <label htmlFor="item_name">Item Name</label>
@@ -102,17 +114,6 @@ const ViewItem = ({ visible, setVisible, item }) => {
                     />
                 </div>
 
-                {/* Issued Quantity */}
-                <div className="mb-3">
-                    <label htmlFor="issued_quantity">Issued Quantity</label>
-                    <input
-                        id="issued_quantity"
-                        type="number"
-                        className="w-full px-5 py-2 rounded-md outline-none border-1 border"
-                        value={item.issued_quantity}
-                        disabled
-                    />
-                </div>
 
                 {/* Current Quantity */}
                 <div className="mb-3">
@@ -161,17 +162,7 @@ const ViewItem = ({ visible, setVisible, item }) => {
                     />
                 </div>
 
-                {/* Expiration Date */}
-                <div className="mb-3">
-                    <label htmlFor="expiration_date">Expiration Date</label>
-                    <input
-                        id="expiration_date"
-                        className="w-full px-5 py-2 rounded-md outline-none border-1 border"
-                        value={formatDate(item.expiration_date)}
-                        disabled
-                    />
-                </div>
-
+        
                 {/* Location */}
                 <div className="mb-3">
                     <label htmlFor="location">Location</label>
@@ -233,15 +224,7 @@ const ViewItem = ({ visible, setVisible, item }) => {
                 </div>
 
 
-                <div className="mb-3">
-                    <label htmlFor="expiration_alert_date">Expiration Alert Date</label>
-                    <input
-                        id="expiration_alert_date"
-                        className="w-full px-5 py-2 rounded-md outline-none border-1 border"
-                        value={formatDate(item.expiration_alert_date)}
-                        disabled
-                    />
-                </div>
+                
             </div>
         </Dialog>
     );

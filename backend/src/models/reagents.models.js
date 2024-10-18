@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
-const ReagentsSchema = new mongoose.Schema({
+const reagentsSchema = new mongoose.Schema({
+    item_code: {
+        type: String,
+        trim: true,
+        unique: true 
+    },
     item_name: {
         type: String,
         required: true,
@@ -21,11 +26,6 @@ const ReagentsSchema = new mongoose.Schema({
         trim: true
     },
     total_quantity: {
-        type: Number,
-        required: true,
-        min: 0
-    },
-    issued_quantity: {
         type: Number,
         required: true,
         min: 0
@@ -56,6 +56,8 @@ const ReagentsSchema = new mongoose.Schema({
     },
     status: {
         type: String,
+        enum: ['Out of Stock', 'Low Stock', 'In Stock'],
+        default: 'In Stock',
         trim: true
     },
     description: {
@@ -79,6 +81,6 @@ const ReagentsSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const ReagentsModel = mongoose.model("chemistryreagents", ReagentsSchema);
+const ReagentsModel = mongoose.model("ChemistryReagents", reagentsSchema);
 
 module.exports = ReagentsModel;

@@ -7,8 +7,8 @@ class OthersService {
     // Register a new Others item
     static async RegisterOthersItem(user, body) {
         const {
-            item_name, company, purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,
+            item_code, item_name, company, purpose, BillNo, total_quantity,
+            current_quantity, min_stock_level, unit_of_measure,
             expiration_date, location, status, description,
             barcode, low_stock_alert, expiration_alert_date
         } = body;
@@ -20,8 +20,8 @@ class OthersService {
         }
 
         await OthersModel.create({
-            item_name, company,  purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,
+            item_code, item_name, company,  purpose, BillNo, total_quantity,
+             current_quantity, min_stock_level, unit_of_measure,
             expiration_date, location, status, description,
             barcode, low_stock_alert, expiration_alert_date, user
         });
@@ -80,6 +80,7 @@ static async GetAllItems(query = '') {
         // Build the search query
         const queries = {
             $or: [
+                { item_code: regexQuery },
                 { item_name: regexQuery },
                 { company: regexQuery },
                 { purpose: regexQuery },
@@ -93,7 +94,7 @@ static async GetAllItems(query = '') {
 
         // Retrieve filtered items
         const data = await OthersModel.find(queries)
-            .select("item_name company createdAt purpose BillNo total_quantity issued_quantity current_quantity min_stock_level unit_of_measure updatedAt expiration_date location status description barcode low_stock_alert expiration_alert_date");
+            .select("item_code item_name company createdAt purpose BillNo total_quantity  current_quantity min_stock_level unit_of_measure updatedAt expiration_date location status description barcode low_stock_alert expiration_alert_date");
 
 
            
@@ -114,8 +115,8 @@ static async GetAllItems(query = '') {
     // Update a Others item by its ID
     static async UpdateOthersItemById(user,body, id) {
         const {
-            item_name, company, purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,
+            item_code, item_name, company, purpose, BillNo, total_quantity,
+             current_quantity, min_stock_level, unit_of_measure,
              expiration_date, location, status, description,
             barcode, low_stock_alert, expiration_alert_date
         } = body;
@@ -126,6 +127,10 @@ static async GetAllItems(query = '') {
             throw new ApiError(httpStatus.NOT_FOUND, "Others item not found");
         }
 
+         // Calculate the new total and current quantities
+    const updatedTotalQuantity = existingItem.current_quantity + total_quantity;
+    const updatedCurrentQuantity = updatedTotalQuantity;
+
         if (existingItem.barcode !== barcode) {
             const checkExistBarcode = await OthersModel.findOne({ barcode });
 
@@ -135,8 +140,8 @@ static async GetAllItems(query = '') {
         }
 
         await OthersModel.findByIdAndUpdate(id, {
-            item_name, company,  purpose, BillNo, total_quantity,
-            issued_quantity, current_quantity, min_stock_level, unit_of_measure,
+            item_code, item_name, company,  purpose, BillNo,  total_quantity: updatedTotalQuantity, 
+            current_quantity: updatedCurrentQuantity, min_stock_level, unit_of_measure,
              expiration_date, location, status, description,
             barcode, low_stock_alert, expiration_alert_date
         }, { new: true });
@@ -147,7 +152,7 @@ static async GetAllItems(query = '') {
     // Get Others items for search
     static async GetOthersItemForSearch() {
         const data = await OthersModel.find({})
-            .select("item_name company barcode");
+            .select("item_code item_name company barcode");
         
             
 

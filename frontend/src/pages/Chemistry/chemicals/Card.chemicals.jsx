@@ -23,13 +23,13 @@ const ChemicalsCard = ({ data, onDelete }) => {
 
     return (
         <>
-            <tr className="bg-white border-b hover:bg-gray-50">
+            <tr className="bg-white border-b hover:bg-gray-50 text-gray-900 whitespace-nowrap">
+            <td className="px-4 py-2 font-medium ">{data.item_code}</td>
                 <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">{data.item_name}</td>
                 <td className="px-4 py-2">{data.company}</td>
-                <td className="px-4 py-2">{new Date(data.createdAt).toLocaleDateString()}</td>
-                <td className="px-4 py-2">{data.BillNo}</td>
                 <td className="px-4 py-2">{data.total_quantity}</td>
                 <td className="px-4 py-2">{data.current_quantity}</td>
+                <td className="px-4 py-2">{data.status}</td>
                 <td className="px-4 py-2">
                     <div className="flex items-center">
                         <Button 
@@ -74,24 +74,24 @@ const ChemicalsCard = ({ data, onDelete }) => {
 ChemicalsCard.propTypes = {
     data: PropTypes.shape({
         _id: PropTypes.string.isRequired,
+        item_code: PropTypes.string,
         item_name: PropTypes.string.isRequired,
         company: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
         purpose: PropTypes.string.isRequired,
         BillNo: PropTypes.string.isRequired,
         total_quantity: PropTypes.number.isRequired,
-        issued_quantity: PropTypes.number.isRequired,
         current_quantity: PropTypes.number.isRequired,
         min_stock_level: PropTypes.number.isRequired,
         unit_of_measure: PropTypes.string.isRequired,
         updatedAt: PropTypes.string.isRequired,
-        expiration_date: PropTypes.string.isRequired,
+        expiration_date: PropTypes.string,
         location: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
         barcode: PropTypes.string.isRequired,
         low_stock_alert: PropTypes.bool.isRequired,
-        expiration_alert_date: PropTypes.string.isRequired
+        expiration_alert_date: PropTypes.string
     }).isRequired,
     onDelete: PropTypes.func.isRequired
 };

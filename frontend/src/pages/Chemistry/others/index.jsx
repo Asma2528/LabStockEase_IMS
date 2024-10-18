@@ -78,15 +78,15 @@ const OthersPage = () => {
 
     return (
         <>
-         <div className="w-full flex flex-wrap justify-evenly mt-10">
-            <BreadCrumbs PageLink='/Others' PageName='Others' />
+        <div className="w-full flex flex-wrap justify-evenly mt-10">
+            <BreadCrumbs PageLink='/Chemicals' PageName='Chemical' />
 
-            <div className="mb-3 flex justify-end w-[85%] mx-auto">
+            <div className="mb-3 flex justify-end w-[85%] mx-auto gap-x-6">
                 <button
                     onClick={() => setVisible(!visible)}
                     className="px-4 rounded-md py-2 bg-blue-900 text-white inline-flex items-center gap-x-2"
                 >
-                    Add Item < GoPlus />
+                    Add Item <GoPlus />
                 </button>
             </div>
 
@@ -111,12 +111,12 @@ const OthersPage = () => {
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                             <thead className="text-xs text-gray-700 border-b uppercase bg-gray-50">
                                 <tr className="border-b">
+                                    <th scope="col" className="px-4 py-2">Item Code</th>
                                     <th scope="col" className="px-4 py-2">Item Name</th>
                                     <th scope="col" className="px-4 py-2">Company/Brand</th>
-                                    <th scope="col" className="px-4 py-2">Date Created</th>
-                                    <th scope="col" className="px-4 py-2">Bill No</th>
                                     <th scope="col" className="px-4 py-2">Total Quantity</th>
                                     <th scope="col" className="px-4 py-2">Current Quantity</th>
+                                    <th scope="col" className="px-4 py-2">Status</th>
                                     <th scope="col" className="px-4 py-2">Actions</th>
                                 </tr>
                             </thead>
@@ -145,13 +145,13 @@ const OthersPage = () => {
 
             <Model visible={visible} setVisible={setVisible} />
             <ConfirmDialog 
-            visible={dialogVisible} 
-            onHide={() => setDialogVisible(false)} 
-            acceptClassName='p-button-danger p-dialog-footer' 
-            contentClassName='py-4' 
-        />
+                visible={dialogVisible} 
+                onHide={() => setDialogVisible(false)} 
+                acceptClassName='p-button-danger p-dialog-footer' 
+                contentClassName='py-4' 
+            />
         </div>
-        </>
+    </>
     );
 };
 

@@ -9,14 +9,7 @@ class ChemicalsController {
         return res.status(httpStatus.CREATED).json(res_obj);
     });
 
-    // Update a Chemicals item by its ID
-    static updateById = CatchAsync(async (req, res) => {
-        console.log("Before cont")
-        const res_obj = await ChemicalsService.UpdateChemicalsItemById(req?.user, req.body, req.params.id);
-        console.log("After cont")
-        return res.status(httpStatus.OK).json(res_obj);
-    });
-
+    
     // Get a Chemicals item by its ID
     static getById = CatchAsync(async (req, res) => {
         const { id } = req.params;
@@ -32,8 +25,8 @@ class ChemicalsController {
     
         return res.status(httpStatus.OK).json(res_obj);
     });
-
-
+    
+    
 
     // Get all Chemicals items with pagination
     static GetAllItems = CatchAsync(async (req, res) => {
@@ -46,6 +39,11 @@ class ChemicalsController {
             res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
         }
     });         
+            // Update a Chemicals item by its ID
+            static updateById = CatchAsync(async (req, res) => {
+                const res_obj = await ChemicalsService.UpdateChemicalsItemById(req?.user, req.body, req.params.id);
+                return res.status(httpStatus.OK).json(res_obj);
+            });
 
     // Delete a Chemicals item by its ID
     static DeleteChemicalsItem = CatchAsync(async (req, res) => {
@@ -59,6 +57,52 @@ class ChemicalsController {
         return    res.status(httpStatus.OK).json(res_obj)
 
     })
+
+
+
+     // New method to log issued quantities
+     static LogIssuedQuantity = CatchAsync(async (req, res) => {
+        const { item_id, issued_quantity, date_issued, user_email} = req.body;
+        const logEntry = await ChemicalsService.LogIssuedQuantity(item_id, issued_quantity, date_issued, user_email);
+        return res.status(httpStatus.CREATED).json(logEntry);
+    });
+
+    static GetLogs = CatchAsync(async (req, res) => {
+        const logs = await ChemicalsService.GetLogs();
+        return res.status(httpStatus.OK).json(logs);
+    });
+
+    static SearchLogs = CatchAsync(async (req, res) => {
+        const { item_id, user_email, date_start, date_end } = req.query;
+        const logs = await ChemicalsService.SearchLogs(item_id, user_email, date_start, date_end);
+        return res.status(httpStatus.OK).json(logs);
+    });
+
+
+
+    static updateLogById = CatchAsync(async (req, res) => {
+        const { issued_quantity,user_email,date_issued } = req.body; // Ensure this is being destructured correctly
+        const logId = req.params.id; // Log ID from the request parameters
+    console.log(logId);
+    console.log("Request Body:", req.body);
+    
+        if (typeof issued_quantity !== 'number' || issued_quantity < 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid issued quantity." });
+        }
+    
+        const res_obj = await ChemicalsService.UpdateChemicalLogItemById(logId, issued_quantity, user_email,date_issued);
+        return res.status(httpStatus.OK).json(res_obj);
+    });
+    
+// Delete a Chemicals log item by its ID
+static DeleteChemicalsLogItem = CatchAsync(async (req, res) => {
+    const logId = req.params.id; // Log ID from the request parameters
+
+    const res_obj = await ChemicalsService.DeleteChemicalsLogItem(logId);
+
+    return res.status(httpStatus.OK).json(res_obj);
+});
+    
 }
 
 module.exports = ChemicalsController;

@@ -12,32 +12,32 @@ const UpdateModel = ({ visible, setVisible, item }) => {
 
     // Define validation schema
     const validationSchema = yup.object({
+        item_code: yup.string().required("Item code is required"),
         item_name: yup.string().required("Item Name is required"),
         company: yup.string().required("Company is required"),
         purpose: yup.string().required("Purpose is required"),
         BillNo: yup.string().required("Bill Number is required"),
         total_quantity: yup.number().required("Total Quantity is required").positive().integer(),
-        issued_quantity: yup.number().required("Issued Quantity is required").positive().integer(),
         current_quantity: yup.number().required("Current Quantity is required").positive().integer(),
         min_stock_level: yup.number().required("Minimum Stock Level is required").positive().integer(),
         unit_of_measure: yup.string().required("Unit of Measure is required"),
-        expiration_date: yup.date().required("Expiration Date is required"),
+        expiration_date: yup.date(),
         location: yup.string().required("Location is required"),
         status: yup.string().required("Status is required"),
         description: yup.string(),
         barcode: yup.string(),
         low_stock_alert: yup.boolean(),
-        expiration_alert_date: yup.date().required("Expiration Alert Date is required")
+        expiration_alert_date: yup.date()
     });
 
     // Set initial values, handling cases where item might be undefined
     const initialValues = {
+        item_code: item?.item_code|| '',
         item_name: item?.item_name || '',
         company: item?.company || '',
         purpose: item?.purpose || '',
         BillNo: item?.BillNo || '',
         total_quantity: item?.total_quantity || 0,
-        issued_quantity: item?.issued_quantity || 0,
         current_quantity: item?.current_quantity || 0,
         min_stock_level: item?.min_stock_level || 0,
         unit_of_measure: item?.unit_of_measure || '',
@@ -56,6 +56,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
     const onSubmitHandler = async (values) => {
         try {
          
+            values.current_quantity = values.total_quantity;
 
             const formattedValues = {
                 ...values,
@@ -92,6 +93,12 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                 {({ handleSubmit }) => (
                     <form onSubmit={handleSubmit} className="w-full">
                       
+                      <div className="mb-3">
+                            <label htmlFor="item_code">Item Code <span className="text-red-500 text-sm">*</span></label>
+                            <Field name="item_code" id="item_code" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Item Code" />
+                            <ErrorMessage name='item_code' component={'p'} className='text-red-500 text-sm' />
+                        </div>
+
                         <div className="mb-3">
                             <label htmlFor="item_name">Item Name <span className="text-red-500 text-sm">*</span></label>
                             <Field name="item_name" id="item_name" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Item Name" />
@@ -125,20 +132,6 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                                 <label htmlFor="total_quantity">Total Quantity <span className="text-red-500 text-sm">*</span></label>
                                 <Field name="total_quantity" id="total_quantity" type="number" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Total Quantity" />
                                 <ErrorMessage name='total_quantity' component={'p'} className='text-red-500 text-sm' />
-                            </div>
-
-                            {/* Issued Quantity */}
-                            <div className="mb-3">
-                                <label htmlFor="issued_quantity">Issued Quantity <span className="text-red-500 text-sm">*</span></label>
-                                <Field name="issued_quantity" id="issued_quantity" type="number" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Issued Quantity" />
-                                <ErrorMessage name='issued_quantity' component={'p'} className='text-red-500 text-sm' />
-                            </div>
-
-                            {/* Current Quantity */}
-                            <div className="mb-3">
-                                <label htmlFor="current_quantity">Current Quantity <span className="text-red-500 text-sm">*</span></label>
-                                <Field name="current_quantity" id="current_quantity" type="number" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Current Quantity" />
-                                <ErrorMessage name='current_quantity' component={'p'} className='text-red-500 text-sm' />
                             </div>
 
                             {/* Minimum Stock Level */}
@@ -196,7 +189,7 @@ const UpdateModel = ({ visible, setVisible, item }) => {
                             {/* Status */}
                             <div className="mb-3">
                                 <label htmlFor="status">Status <span className="text-red-500 text-sm">*</span></label>
-                                <Field as="select" name="status" id="status" className="w-full px-5 py-2 rounded-md outline-none border-1 border">
+                                <Field as="select" name="status" id="status" className="w-full px-5 py-2 rounded-md outline-none border-1 border" disabled>
                                     <option value="">Select Status</option>
                                     <option value="In Stock">In Stock</option>
                                     <option value="Out of Stock">Out of Stock</option>
@@ -260,6 +253,7 @@ UpdateModel.propTypes = {
     setVisible: PropTypes.func.isRequired,
     item: PropTypes.shape({
         _id: PropTypes.string.isRequired,
+        item_code: PropTypes.string,
         item_name: PropTypes.string,
         company: PropTypes.string,
         purpose: PropTypes.string,

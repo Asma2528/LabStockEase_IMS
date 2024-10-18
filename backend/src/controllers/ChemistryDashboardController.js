@@ -45,7 +45,11 @@ const getExpirySummary = async (model) => {
     };
 };
 
-// Get dashboard summary for all menu items
+// Helper function to get detailed items
+const getItemsDetail = async (model, filter) => {
+    return model.find(filter).exec();
+};
+
 exports.getDashboardSummary = async (req, res) => {
     try {
         // Calculate summaries for all models
@@ -67,7 +71,6 @@ exports.getDashboardSummary = async (req, res) => {
         const reagentsExpiry = await getExpirySummary(Reagents);
         const othersExpiry = await getExpirySummary(Others);
 
-
         // Calculate in stock summaries
         const chemicalsInStock = await getInStockSummary(Chemicals);
         const reagentsInStock = await getInStockSummary(Reagents);
@@ -87,14 +90,30 @@ exports.getDashboardSummary = async (req, res) => {
         // Total zero stock count
         const zeroStockCount = chemicalsStock.zeroStock + reagentsStock.zeroStock + glasswareStock.zeroStock + measuringStock.zeroStock + othersStock.zeroStock;
 
-
-
         // Total expired items count
         const expiredItemsCount = chemicalsExpiry.expiredCount + reagentsExpiry.expiredCount + othersExpiry.expiredCount;
+
+        // Fetch detailed low stock items
+        const lowStockItems = [
+            ...(await getItemsDetail(Chemicals, { $expr: { $lte: ["$current_quantity", "$min_stock_level"] } })),
+            ...(await getItemsDetail(Reagents, { $expr: { $lte: ["$current_quantity", "$min_stock_level"] } })),
+            ...(await getItemsDetail(Glassware, { $expr: { $lte: ["$current_quantity", "$min_stock_level"] } })),
+            ...(await getItemsDetail(Measuring, { $expr: { $lte: ["$current_quantity", "$min_stock_level"] } })),
+            ...(await getItemsDetail(Others, { $expr: { $lte: ["$current_quantity", "$min_stock_level"] } }))
+        ];
+
+        // Fetch detailed near expiry items
+        const nearExpiryItems = [
+            ...(await getItemsDetail(Chemicals, { expiration_alert_date: { $lte: new Date() } })),
+            ...(await getItemsDetail(Reagents, { expiration_alert_date: { $lte: new Date() } })),
+            ...(await getItemsDetail(Others, { expiration_alert_date: { $lte: new Date() } }))
+        ];
 
         // Calculate total items and total quantity across all models
         const totalItemsCount = chemicalsSummary.totalCount + reagentsSummary.totalCount + glasswareSummary.totalCount + measuringSummary.totalCount + othersSummary.totalCount;
         const totalItemsQuantity = chemicalsSummary.totalQuantity + reagentsSummary.totalQuantity + glasswareSummary.totalQuantity + measuringSummary.totalQuantity + othersSummary.totalQuantity;
+
+
 
         // Send the dashboard summary
         res.status(200).json({
@@ -108,9 +127,11 @@ exports.getDashboardSummary = async (req, res) => {
             lowStockCount,
             nearExpiryCount,
             zeroStockCount,
-         inStockCount ,
+            inStockCount,
             expiredItemsCount,
-            outOfStockItemsCount: zeroStockCount
+            outOfStockItemsCount: zeroStockCount,
+            lowStockItems, // Send detailed low stock items
+            nearExpiryItems,// Send detailed near expiry items
         });
     } catch (error) {
         res.status(500).json({ message: "Error fetching dashboard data", error });

@@ -15,14 +15,6 @@ export default function PieChartDemo() {
     const glasswareSummary = dashboardData.glasswareSummary || {};
     const measuringSummary = dashboardData.measuringSummary || {};
     const othersSummary = dashboardData.othersSummary || {};
-
-    if (isLoading) return <div>Loading...</div>;
-    if (error) {
-        toast.error("Error fetching dashboard data");
-        console.error(error);
-        return <div>Error fetching data</div>;
-    }
-
     useEffect(() => {
         const data = {
             labels: ['Chemicals', 'Reagents', 'Glassware', 'Measuring', 'Others'],
@@ -65,6 +57,14 @@ export default function PieChartDemo() {
         setChartData(data);
         setChartOptions(options);
     }, [dashboardData]);
+
+    if (isLoading) return <div>Loading...</div>;
+    if (error) {
+        toast.error("Error fetching dashboard data");
+        console.error(error);
+        return <div>Error fetching data</div>;
+    }
+
 
     return (
         <Chart type="pie" data={chartData} options={chartOptions} className="w-full lg:w-1/3" />

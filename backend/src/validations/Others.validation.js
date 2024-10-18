@@ -2,12 +2,13 @@ const { body, param } = require('express-validator');
 
 class OthersValidation {
     static RegisterOthers = [
+        body('item_code')
+        .optional().isString().withMessage('Item Code must be a string'),
         body('item_name').notEmpty().withMessage('Item name cannot be empty'),
         body('company').notEmpty().withMessage('Company/Brand cannot be empty'),
         body('purpose').optional().isString().withMessage('Purpose must be a string'),
         body('BillNo').notEmpty().withMessage('Bill No cannot be empty'),
         body('total_quantity').isInt({ gt: 0 }).withMessage('Total quantity must be a positive integer'),
-        body('issued_quantity').isInt({ gte: 0 }).withMessage('Issued quantity must be a non-negative integer'),
         body('current_quantity').isInt({ gte: 0 }).withMessage('Current quantity must be a non-negative integer'),
         body('min_stock_level').isInt({ gt: 0 }).withMessage('Minimum stock level must be a positive integer'),
         body('unit_of_measure').notEmpty().withMessage('Unit of measure cannot be empty'),
