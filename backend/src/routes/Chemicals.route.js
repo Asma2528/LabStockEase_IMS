@@ -23,22 +23,41 @@ router.patch("/update/:id", ChemicalsValidation.RegisterChemicals, Validation, C
 // Route to delete a Chemicals item by its ID
 router.delete("/delete/:id", ChemicalsValidation.Params_id, Validation, ChemicalsController.DeleteChemicalsItem);
 
-router.get("/get-search", ChemicalsController.GetChemicalsItemForSearch);
 
-
+// Route to register a log for issued chemicals
 router.post(
-    "/register-log",
-    ChemicalsValidation.LogIssuedQuantity,  // Validation for logging quantity
-    Validation,  // General validation middleware
-    ChemicalsController.LogIssuedQuantity  // Controller to handle logging
-  );
+  "/register-log",
+  ChemicalsValidation.LogIssuedQuantity,  // Validation for logging quantity
+  Validation,  // General validation middleware
+  ChemicalsController.LogIssuedQuantity  // Controller to handle logging
+);
 
-  router.get("/get-all-logs", ChemicalsController.GetLogs);
+// Route to get all logs
+router.get("/get-all-logs", ChemicalsController.GetLogs);
 
-  router.get("/get-search-log", ChemicalsController.SearchLogs);
 
-  router.patch("/update-log/:id",  ChemicalsValidation.LogIssuedQuantity, Validation, ChemicalsController.updateLogById);
+// Route to update a log
+router.patch("/update-log/:id",  ChemicalsValidation.LogIssuedQuantity, Validation, ChemicalsController.updateLogById);
 
-  router.delete("/delete-log/:id", ChemicalsValidation.Params_id, Validation, ChemicalsController.DeleteChemicalsLogItem);
+// Route to delete a log
+router.delete("/delete-log/:id", ChemicalsValidation.Params_id, Validation, ChemicalsController.DeleteChemicalsLogItem);
+
+// Restock a chemical item
+router.post("/restock", ChemicalsValidation.RestockChemical, Validation, ChemicalsController.RestockChemical);
+
+// Route to get all restock records
+router.get('/restock/get-all', ChemicalsController.GetAllRestocks);
+
+// Route to update a restock record
+router.patch("/restock/:id", ChemicalsValidation.RestockChemical, Validation, ChemicalsController.UpdateRestockRecordById);
+
+// Route to delete a restock record
+router.delete("/restock/:id", ChemicalsValidation.Params_id, Validation, ChemicalsController.DeleteRestockRecordById);
+
+// Route to get chemical by code or name
+router.get('/get-chemical-by-code-or-name', ChemicalsController.GetChemicalByCodeOrName);
+
+
+
 
 module.exports = router;

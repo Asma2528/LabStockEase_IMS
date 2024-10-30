@@ -152,34 +152,23 @@ out of stock - 10
 exxpired - 3
 
 
-cost estimation
-
-Number of User Input	
-92  
-		
-Number of User Outputs	
-25
-		
-Number of User Inquiries	
-5
-		
-Number of Files	
-443
-		
-Number of External Interfaces	
 
 
-Things to be done:
-- check logic of logs (for the quanities changing)
-- make implementation documentation and dissertation and mail sir 
 
-- search functionality of logs
+NOTES:
+email notifications (when stock is low, when stock is requested, when stock request is accepted, when stock is expired) 
+users login - admin, lab manager, faculty
+Replace previous categores with current ones
+(Capital, comsumalbles, etc) 
+Add msds documents
+Interface which shows information of each chemical (We should see issue logs and restock for a particular checmial in 1 place)
+
+
+MODULES:
+Order management -
+Store manager - Each vendor charges how much 
+3 vendors (system will choose whichever) 
 
 
 
 
-
-Later on to do if time is there:
-- list of chemical names and item code 
-- null values for expiration date
-- on view item one more interface which displays logs of that particular item

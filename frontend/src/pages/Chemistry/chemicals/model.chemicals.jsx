@@ -9,47 +9,25 @@ import { useAddChemicalsItemMutation } from '../../../provider/queries/Chemicals
 const Model = ({ visible, setVisible }) => {
     const [addChemicalsItem, { isLoading }] = useAddChemicalsItemMutation();
 
-    const today = new Date();
     const validationSchema = yup.object({
-        item_code: yup.string(),
         item_name: yup.string().required("Item name is required"),
         company: yup.string().required("Company/Brand is required"),
         purpose: yup.string(),
-        BillNo: yup.string().required("Bill No is required"),
-        total_quantity: yup.number().required("Total quantity is required").positive().integer(),
         min_stock_level: yup.number().required("Minimum stock level is required").positive().integer(),
         unit_of_measure: yup.string().required("Unit of measurement is required"),
-        expiration_date: yup.date().required("Expiration date is required"),
-        location: yup.string().required("Location is required"),
         description: yup.string(),
-        barcode: yup.string(),
-        low_stock_alert: yup.boolean(),
-        expiration_alert_date: yup.date().required("Expiration alert date is required"),
     });
 
     const initialValues = {
-        item_code: '',
         item_name: '',
         company: '',
         purpose: '',
-        BillNo: '',
-        total_quantity: 0,
-        current_quantity: 0, // This will be set in onSubmitHandler
         min_stock_level: 0,
         unit_of_measure: '',
-        expiration_date: today.toISOString().split('T')[0], // Convert to 'YYYY-MM-DD'
-        location: '',
-        status: 'In Stock', // Default status
         description: '',
-        barcode: '',
-        low_stock_alert: true,
-        expiration_alert_date: today.toISOString().split('T')[0] // Convert to 'YYYY-MM-DD'
     };
 
     const onSubmitHandler = async (values, { resetForm }) => {
-        // Set current_quantity to total_quantity before submission
-        values.current_quantity = values.total_quantity;
-
         try {
             const response = await addChemicalsItem(values);
             if (response.error) {
@@ -69,12 +47,7 @@ const Model = ({ visible, setVisible }) => {
             <Formik onSubmit={onSubmitHandler} initialValues={initialValues} validationSchema={validationSchema}>
                 {({ handleSubmit }) => (
                     <form onSubmit={handleSubmit} className="w-full">
-                      
-                        <div className="mb-3">
-                            <label htmlFor="item_code">Item Code <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="item_code" id="item_name" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Item Name" />
-                            <ErrorMessage name='item_code' component={'p'} className='text-red-500 text-sm' />
-                        </div>
+
                         <div className="mb-3">
                             <label htmlFor="item_name">Item Name <span className="text-red-500 text-sm">*</span></label>
                             <Field name="item_name" id="item_name" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Item Name" />
@@ -92,20 +65,6 @@ const Model = ({ visible, setVisible }) => {
                             <Field name="purpose" id="purpose" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Purpose" />
                             <ErrorMessage name='purpose' component={'p'} className='text-red-500 text-sm' />
                         </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="BillNo">Bill Number <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="BillNo" id="BillNo" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Bill Number" />
-                            <ErrorMessage name='BillNo' component={'p'} className='text-red-500 text-sm' />
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="total_quantity">Total Quantity <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="total_quantity" id="total_quantity" type="number" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Total Quantity" />
-                            <ErrorMessage name='total_quantity' component={'p'} className='text-red-500 text-sm' />
-                        </div>
-
-                        {/* Current Quantity is hidden and set to total_quantity in onSubmitHandler */}
 
                         <div className="mb-3">
                             <label htmlFor="min_stock_level">Minimum Stock Level <span className="text-red-500 text-sm">*</span></label>
@@ -137,46 +96,9 @@ const Model = ({ visible, setVisible }) => {
                         </div>
 
                         <div className="mb-3">
-                            <label htmlFor="expiration_date">Expiration Date <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="expiration_date" id="expiration_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                            <ErrorMessage name='expiration_date' component={'p'} className='text-red-500 text-sm' />
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="location">Location <span className="text-red-500 text-sm">*</span></label>
-                            <Field name="location" id="location" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Location" />
-                            <ErrorMessage name='location' component={'p'} className='text-red-500 text-sm' />
-                        </div>
-
-                        {/* Status is hidden and defaults to "In Stock" in initialValues */}
-
-                        <div className="mb-3">
                             <label htmlFor="description">Description</label>
                             <Field name="description" id="description" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Description" />
                             <ErrorMessage name='description' component={'p'} className='text-red-500 text-sm' />
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="barcode">Barcode</label>
-                            <Field name="barcode" id="barcode" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" placeholder="Enter Barcode" />
-                            <ErrorMessage name='barcode' component={'p'} className='text-red-500 text-sm' />
-                        </div>
-
-                        <div className="mb-3 flex items-center">
-                            <Field
-                                name="low_stock_alert"
-                                id="low_stock_alert"
-                                type="checkbox"
-                                className="w-4 h-4 rounded-md outline-none border-1 border mr-2"
-                            />
-                            <label htmlFor="low_stock_alert" className="text-sm">Yes, I want alerts</label>
-                            <ErrorMessage name='low_stock_alert' component={'p'} className='text-red-500 text-sm ml-2' />
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="expiration_alert_date">Expiration Alert Date</label>
-                            <Field name="expiration_alert_date" id="expiration_alert_date" type="date" className="w-full px-5 py-2 rounded-md outline-none border-1 border" />
-                            <ErrorMessage name='expiration_alert_date' component={'p'} className='text-red-500 text-sm' />
                         </div>
 
                         <Button type="submit" className='w-full bg-blue-900 text-center text-white py-3 flex items-center justify-center' disabled={isLoading}>

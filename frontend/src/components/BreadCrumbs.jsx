@@ -6,6 +6,7 @@ const breadcrumbMap = {
   '/': 'Dashboard',
   '/chemistry': 'Chemistry',
   '/chemistry/chemicals': 'Chemicals',
+  '/chemistry/chemicals/restock': 'Chemicals Restock',
   '/chemistry/chemicals/logs': 'Chemical Logs',
   '/chemistry/reagents': 'Reagents',
   '/chemistry/reagents/logs': 'Reagents Logs',

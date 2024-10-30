@@ -2,41 +2,48 @@ import { useState } from 'react';
 import BreadCrumbs from '../../../components/BreadCrumbs';
 import Model from './log.model.chemicals';
 import ChemicalsLogCard from './log.card.chemicals';
-import { useSearchChemicalsLogsQuery } from "../../../provider/queries/Chemicals.query";
-import { useDeleteChemicalsLogMutation } from '../../../provider/queries/Chemicals.query';
+import { useGetChemicalsLogsQuery, useDeleteChemicalsLogMutation } from '../../../provider/queries/Chemicals.query';
 import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog';
 import { toast } from 'sonner';
 import { Button } from 'primereact/button';
 
 const ChemicalsLogsPage = () => {
     const [visible, setVisible] = useState(false);
-    const [searchParams, setSearchParams] = useState({
-        item_id: '',
-        user_email: '',
-        date_start: '',
-        date_end: ''
-    });
-
-
-    const [selectedItem, setSelectedItem] = useState(null);
     const [dialogVisible, setDialogVisible] = useState(false);
 
-    const { data: logs, isLoading, isFetching } = useSearchChemicalsLogsQuery(searchParams);
+    const [searchParams, setSearchParams] = useState({
+        item_code: '',
+        item_name: '',
+        user_email: '',
+        date_issued: '',  // Single date filter
+    });
+
+    const { data: logs, isLoading, isFetching, refetch } = useGetChemicalsLogsQuery(searchParams);
     const [deleteChemicalsLog] = useDeleteChemicalsLogMutation();
+
+    const onSearchChange = (e) => {
+        
+        const { name, value } = e.target;
+        setSearchParams((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        refetch(); // Fetch logs with updated search parameters
+    };
 
     const deleteHandler = (_id) => {
         setDialogVisible(true);
         confirmDialog({
-            message: "Are you sure you want to delete the log?",
+            message: "Are you sure you want to delete this log?",
             header: 'Confirm Deletion',
             icon: 'pi pi-exclamation-triangle',
-            defaultFocus: 'reject',
             footer: (
                 <div className="p-dialog-footer">
                     <Button 
                         label="Yes, Delete it" 
                         icon="pi pi-check" 
-                        className="p-button-danger rounded-md bg-red-500 text-white inline-flex items-center p-2 justify-center pr-4" 
+                        className="p-button-danger" 
                         onClick={async () => {
                             try {
                                 const { data, error } = await deleteChemicalsLog(_id);
@@ -45,6 +52,7 @@ const ChemicalsLogsPage = () => {
                                     return;
                                 }
                                 toast.success(data.msg);
+                                refetch();
                             } catch (e) {
                                 toast.error(e.message);
                             } finally {
@@ -55,18 +63,13 @@ const ChemicalsLogsPage = () => {
                     <Button 
                         label="No, Keep it"     
                         icon="pi pi-times" 
-                        className="p-button-secondary p-2 rounded-md bg-blue-900 text-white inline-flex items-center ml-2 pr-4" 
-                        onClick={() => { 
-                            toast.info("Deletion canceled for " + _id);
-                            setDialogVisible(false);
-                        }}
+                        className="p-button-secondary" 
+                        onClick={() => setDialogVisible(false)}
                     />
                 </div>
             ),
         });
     };
-    
-    
 
     return (
         <>
@@ -82,51 +85,59 @@ const ChemicalsLogsPage = () => {
                     </button>
                 </div>
 
+                {/* Search Bar */}
+                <form onSubmit={handleSearchSubmit} className="mt-10 flex justify-end w-[90%] mx-auto gap-x-4">
+                    <input name="item_code" placeholder="Item Code" className="w-1/5 p-2 border rounded" onChange={onSearchChange} />
+                 
+                    <input name="item_name" placeholder="Item Name" className="w-1/5 p-2 border rounded" onChange={onSearchChange} />
+                    <input
+            name="date_issued"
+            type="text"
+          placeholder="Date Issued"
+            className="w-1/6 p-2 border rounded"
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => (e.target.type = "text")}
+            onChange={onSearchChange}
+          />
+                    <input name="user_email" placeholder="User Email" className="w-1/5 p-2 border rounded" onChange={onSearchChange} />
+                </form>
+
                 <div className="w-full pt-10">
                     <div className="relative overflow-x-auto shadow">
-                        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <table className="w-full text-sm text-left text-gray-500">
                             <thead className="text-xs text-gray-700 border-b uppercase bg-gray-50">
-                                <tr className="border-b">
-                                    <th scope="col" className="px-4 py-2">Item Code</th>
-                                    <th scope="col" className="px-4 py-2">Item Name</th>
-                                    <th scope="col" className="px-4 py-2">Issued Quantity</th>
-                                    <th scope="col" className="px-4 py-2">Date Issued</th>
-                                    <th scope="col" className="px-4 py-2">User</th>
-                                    <th scope="col" className="px-4 py-2">Actions</th>
+                                <tr>
+                                    <th className="px-4 py-2">Item Code</th>
+                                    <th className="px-4 py-2">Item Name</th>
+                                    <th className="px-4 py-2">Issued Quantity</th>
+                                    <th className="px-4 py-2">Date Issued</th>
+                                    <th className="px-4 py-2">User</th>
+                                    <th className="px-4 py-2">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-    {isLoading || isFetching ? (
-        <tr>
-            <td colSpan="6" className="text-center px-4 py-2">
-               Loading..
-            </td>
-        </tr>
-    ) : logs?.length > 0 ? (
-        logs.map(log => (
-            <ChemicalsLogCard key={log._id} data={log} onDelete={() => {
-                setSelectedItem(log._id);
-                deleteHandler(log._id);
-            }}/>
-        ))
-    ) : (
-        <tr>
-            <td colSpan="6" className="text-center px-4 py-2">No log items found</td>
-        </tr>
-    )}
-</tbody>
-
+                                {isLoading || isFetching ? (
+                                    <tr>
+                                        <td colSpan="6" className="text-center px-4 py-2">Loading..</td>
+                                    </tr>
+                                ) : Array.isArray(logs) && logs.length > 0 ? (
+                                    logs.map(log => (
+                                        <ChemicalsLogCard key={log._id} data={log} onDelete={() => deleteHandler(log._id)} />
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className="text-center px-4 py-2">No log items found</td>
+                                    </tr>
+                                )
+                                
+                                }
+                            </tbody>
                         </table>
                     </div>
                 </div>
 
                 <Model visible={visible} setVisible={setVisible} />
-                <ConfirmDialog 
-                    visible={dialogVisible} 
-                    onHide={() => setDialogVisible(false)} 
-                    acceptClassName='p-button-danger p-dialog-footer' 
-                    contentClassName='py-4' 
-                />
+                <ConfirmDialog visible={dialogVisible} onHide={() => setDialogVisible(false)} />
             </div>
         </>
     );

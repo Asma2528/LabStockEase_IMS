@@ -1,331 +1,563 @@
 const httpStatus = require("http-status");
-const { ChemicalsModel, ChemicalsLogModel } = require("../models");
+const {
+  ChemicalsModel,
+  ChemicalsLogModel,
+  ChemicalsRestockModel,
+} = require("../models");
 const ApiError = require("../utils/ApiError");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 class ChemicalsService {
-    // Register a new Chemicals item
-    static async RegisterChemicalsItem(user, body) {
-        const {
-            item_code, item_name, company, purpose, BillNo, total_quantity,
-            current_quantity, min_stock_level, unit_of_measure,
-            expiration_date, location, status, description,
-            barcode, low_stock_alert, expiration_alert_date
-        } = body;
+  static async RegisterChemicalsItem(user, body) {
+    const {
+      item_name,
+      company,
+      purpose,
+      min_stock_level,
+      unit_of_measure,
+      description,
+    } = body;
 
-        // const existingChemical = await ChemicalsModel.findOne({ item_code });
-        // if (existingChemical) {
-        //     throw new ApiError(httpStatus.BAD_REQUEST, "Item Code already exists");
-        // }
+    // Generate item code
+    const itemCodePrefix = item_name.slice(0, 1).toUpperCase();
+    const lastItem = await ChemicalsModel.findOne({
+      item_code: { $regex: `^${itemCodePrefix}-` },
+    })
+      .sort({ item_code: -1 })
+      .exec();
 
-        // if (existingItem.item_code === item_code) {
-        //     throw new ApiError(httpStatus.BAD_REQUEST, "Item Code already exists");
-        // }
-
-        const checkExist = await ChemicalsModel.findOne({ barcode, user });
-        if (checkExist) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Chemicals item already exists in the record");
-        }
-
-        await ChemicalsModel.create({
-            item_code, item_name, company, purpose, BillNo, total_quantity,
-            current_quantity, min_stock_level, unit_of_measure,
-            expiration_date, location, status, description,
-            barcode, low_stock_alert, expiration_alert_date, user
-        });
-
-        return { msg: "Chemicals item added :)" };
+    let nextNumber = 1;
+    if (lastItem) {
+      const lastItemCode = lastItem.item_code;
+      const lastNumber = parseInt(lastItemCode.split("-")[1], 10);
+      if (!isNaN(lastNumber)) {
+        nextNumber = lastNumber + 1;
+      }
     }
 
+    const item_code = `${itemCodePrefix}-${nextNumber}`;
+    const total_quantity = 0;
+    const current_quantity = 0;
 
- // Delete a Chemicals item by its ID
-static async DeleteChemicalsItem(user, id) {
+    const chemical = await ChemicalsModel.create({
+      item_code,
+      item_name,
+      company,
+      purpose,
+      total_quantity,
+      current_quantity,
+      min_stock_level,
+      unit_of_measure,
+      description,
+      status: current_quantity > min_stock_level ? "In Stock" : "Out of Stock",
+      user,
+    });
+
+    return { msg: "Chemicals item added successfully!", chemical };
+  }
+
+  // Restock chemical by adding purchased quantities
+  static async RestockChemical(user, body) {
+    const {
+      chemical_id,
+      item_code,
+      item_name,
+      quantity_purchased,
+      purchase_date,
+      expiration_date,
+      supplier,
+      bill_number,
+      cost_per_purchase,
+      location,
+      barcode,
+    } = body;
+
+    // Fetch chemical by either ID, item code, or item name
+    let existingChemical;
+
+    if (body.chemical) {
+      if (!mongoose.Types.ObjectId.isValid(body.chemical)) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Invalid chemical ID");
+      }
+      existingChemical = await ChemicalsModel.findById(body.chemical);
+    } else if (item_code) {
+      existingChemical = await ChemicalsModel.findOne({ item_code });
+    } else if (item_name) {
+      existingChemical = await ChemicalsModel.findOne({ item_name });
+    }
+
+    if (!existingChemical) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Chemical not found");
+    }
+
+    // Log the purchase in Restock Model
+    const restockRecord = await ChemicalsRestockModel.create({
+      chemical: existingChemical._id,
+      quantity_purchased,
+      purchase_date,
+      expiration_date,
+      supplier,
+      bill_number,
+      cost_per_purchase,
+      location,
+      barcode,
+    });
+
+    // Update the chemical stock
+    existingChemical.total_quantity += quantity_purchased;
+    existingChemical.current_quantity += quantity_purchased;
+
+    // Update chemical status
+    existingChemical.status =
+      existingChemical.current_quantity <= existingChemical.min_stock_level
+        ? "Out of Stock"
+        : "In Stock";
+
+    await existingChemical.save();
+
+    return { msg: "Chemical restocked successfully", restockRecord };
+  }
+
+  static async GetAllRestocks(filters = {}) {
+    const query = {};
+
+    // Lookup for chemical ID by item_code or item_name before querying the restock data
+    if (filters.chemical) {
+      // Find matching chemicals by item_code or item_name using regex
+      const matchingChemicals = await ChemicalsModel.find({
+        $or: [
+          { item_code: { $regex: filters.chemical, $options: "i" } },
+          { item_name: { $regex: filters.chemical, $options: "i" } },
+        ],
+      }).select("_id"); // Only get the _id of matching chemicals
+
+      // Extract the IDs into an array
+      const chemicalIds = matchingChemicals.map((c) => c._id);
+      query.chemical = { $in: chemicalIds }; // Match any of the found chemical IDs
+    }
+
+    if (filters.purchase_date) {
+      const startOfDay = new Date(filters.purchase_date);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const endOfDay = new Date(filters.purchase_date);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+      query.purchase_date = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    if (filters.bill_number) {
+      query.bill_number = { $regex: filters.bill_number, $options: "i" };
+    }
+
+    if (filters.location) {
+      query.location = { $regex: filters.location, $options: "i" };
+    }
+
+    if (filters.barcode) {
+      query.barcode = { $regex: filters.barcode, $options: "i" };
+    }
+
+    const restocks = await ChemicalsRestockModel.find(query)
+      .populate("chemical", "item_code item_name")
+      .sort({ purchase_date: -1 });
+
+    return restocks;
+  }
+
+  // Update restock record by ID
+  static async UpdateRestockRecordById(restockId, body) {
+    const {
+      quantity_purchased,
+      purchase_date,
+      supplier,
+      bill_number,
+      cost_per_purchase,
+      location,
+      barcode,
+    } = body;
+
+    if (!mongoose.Types.ObjectId.isValid(restockId)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Restock ID format");
+    }
+
+    const restockRecord = await ChemicalsRestockModel.findById(restockId);
+    if (!restockRecord) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Restock record not found");
+    }
+
+    const originalQuantity = restockRecord.quantity_purchased;
+
+    // Update restock record fields
+    restockRecord.quantity_purchased =
+      quantity_purchased || restockRecord.quantity_purchased;
+    restockRecord.purchase_date = purchase_date || restockRecord.purchase_date;
+    restockRecord.supplier = supplier || restockRecord.supplier;
+    restockRecord.bill_number = bill_number || restockRecord.bill_number;
+    restockRecord.cost_per_purchase =
+      cost_per_purchase || restockRecord.cost_per_purchase;
+    restockRecord.location = location || restockRecord.location;
+    restockRecord.barcode = barcode || restockRecord.barcode;
+
+    await restockRecord.save();
+
+    // Adjust the chemical's current and total quantity based on the change in purchased quantity
+    const chemicalRecord = await ChemicalsModel.findById(
+      restockRecord.chemical
+    );
+    if (chemicalRecord) {
+      const quantityDifference = quantity_purchased - originalQuantity;
+      chemicalRecord.current_quantity += quantityDifference;
+      chemicalRecord.total_quantity += quantityDifference;
+
+      chemicalRecord.status =
+        chemicalRecord.current_quantity <= chemicalRecord.min_stock_level
+          ? "Low Stock"
+          : "In Stock";
+      await chemicalRecord.save();
+    }
+
+    return { msg: "Restock record updated successfully", restockRecord };
+  }
+
+  // Delete restock record by ID
+  static async DeleteRestockRecordById(restockId) {
+    if (!mongoose.Types.ObjectId.isValid(restockId)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Restock ID format");
+    }
+
+    const restockRecord = await ChemicalsRestockModel.findById(restockId);
+    if (!restockRecord) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Restock record not found");
+    }
+
+    const originalQuantity = restockRecord.quantity_purchased;
+
+    await ChemicalsRestockModel.findByIdAndDelete(restockId);
+
+    const chemicalRecord = await ChemicalsModel.findById(
+      restockRecord.chemical
+    );
+    if (chemicalRecord) {
+      chemicalRecord.current_quantity -= originalQuantity;
+      chemicalRecord.total_quantity -= originalQuantity;
+
+      chemicalRecord.status =
+        chemicalRecord.current_quantity <= chemicalRecord.min_stock_level
+          ? "Low Stock"
+          : "In Stock";
+      await chemicalRecord.save();
+    }
+
+    return { msg: "Restock record deleted successfully" };
+  }
+
+  // Delete a Chemicals item and its associated restocks and logs
+  static async DeleteChemicalsItem(user, id) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Invalid item ID format");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid item ID format");
     }
 
-    const result = await ChemicalsModel.findByIdAndDelete(id);
-    if (!result) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Chemicals item not found in the record');
+    const chemical = await ChemicalsModel.findById(id);
+    if (!chemical) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        "Chemicals item not found in the record"
+      );
     }
+
+    // Delete associated restock records
+    await ChemicalsRestockModel.deleteMany({ chemical: id });
 
     // Delete associated logs
     await ChemicalsLogModel.deleteMany({ item: id });
 
-    return { msg: 'Item and associated logs deleted successfully' };
-}
+    // Finally, delete the chemical item itself
+    await ChemicalsModel.findByIdAndDelete(id);
 
+    return {
+      msg: "Item and associated restocks and logs deleted successfully",
+    };
+  }
 
-    // Get a Chemicals item by its ID
-    static async getById(id) {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Invalid item ID format");
-        }
-
-        const item = await ChemicalsModel.findById(id);
-        if (!item) {
-            throw new ApiError(httpStatus.NOT_FOUND, "Chemicals item not found in the record");
-        }
-
-        return { item };
+  // Get a Chemicals item by its ID
+  static async getById(id) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid item ID format");
     }
 
-    // Get all Chemicals items with search functionality
-    static async GetAllItems(query = '') {
-        const regexQuery = new RegExp(query, 'i');
-        const queries = {
-            $or: [
-                { item_code: regexQuery },
-                { item_name: regexQuery },
-                { company: regexQuery },
-                { purpose: regexQuery },
-                { unit_of_measure: regexQuery },
-                { location: regexQuery },
-                { status: regexQuery },
-                { description: regexQuery },
-                { barcode: regexQuery }
-            ]
-        };
-
-        const data = await ChemicalsModel.find(queries)
-            .select("item_code item_name company createdAt purpose BillNo total_quantity current_quantity min_stock_level unit_of_measure updatedAt expiration_date location status description barcode low_stock_alert expiration_alert_date");
-
-        const totalChemicals = data.length;
-
-        return {
-            items: data,
-            total: totalChemicals
-        };
+    const item = await ChemicalsModel.findById(id);
+    if (!item) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        "Chemicals item not found in the record"
+      );
     }
-// Update a Chemicals item by its ID
-static async UpdateChemicalsItemById(user, body, id) {
+
+    return { item };
+  }
+
+  // Get all Chemicals items with search functionality
+  static async GetAllItems(filters = {}) {
+    const query = {}; // Initialize an empty query object
+
+    // Add individual fields to the query object if they are present in the filters
+    if (filters.item_code)
+      query.item_code = { $regex: filters.item_code, $options: "i" };
+    if (filters.item_name)
+      query.item_name = { $regex: filters.item_name, $options: "i" };
+    if (filters.company)
+      query.company = { $regex: filters.company, $options: "i" };
+    if (filters.status)
+      query.status = { $regex: filters.status, $options: "i" };
+    if (filters.purpose)
+      query.purpose = { $regex: filters.purpose, $options: "i" };
+    if (filters.unit_of_measure)
+      query.unit_of_measure = {
+        $regex: filters.unit_of_measure,
+        $options: "i",
+      };
+    if (filters.description)
+      query.description = { $regex: filters.description, $options: "i" };
+
+    const data = await ChemicalsModel.find(query).select(
+      "item_code item_name company createdAt purpose total_quantity current_quantity min_stock_level unit_of_measure updatedAt status description"
+    );
+
+    const totalChemicals = data.length;
+
+    return {
+      items: data,
+      total: totalChemicals,
+    };
+  }
+
+  static async UpdateChemicalsItemById(user, body, id) {
     const {
-        item_code, item_name, company, purpose, BillNo, total_quantity,
-        current_quantity, min_stock_level, unit_of_measure,
-        expiration_date, location, status, description,
-        barcode, low_stock_alert, expiration_alert_date
+      item_name,
+      company,
+      purpose,
+      min_stock_level,
+      unit_of_measure,
+      description,
+      expiration_date,
     } = body;
 
     const existingItem = await ChemicalsModel.findById(id);
     if (!existingItem) {
-        throw new ApiError(httpStatus.NOT_FOUND, "Chemicals item not found");
+      throw new ApiError(httpStatus.NOT_FOUND, "Chemicals item not found");
     }
 
-    // Calculate the new total and current quantities
-    const updatedTotalQuantity = existingItem.current_quantity + total_quantity;
-    const updatedCurrentQuantity = updatedTotalQuantity;
+    const updatedData = {
+      item_name,
+      company,
+      purpose,
+      min_stock_level,
+      unit_of_measure,
+      description,
+    };
 
-    // Check if the barcode has changed
-    if (existingItem.barcode !== barcode) {
-        const checkExistBarcode = await ChemicalsModel.findOne({ barcode });
-        if (checkExistBarcode) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Chemicals item with this barcode already exists in another record");
-        }
+    if (expiration_date) {
+      updatedData.expiration_date = expiration_date;
     }
 
-    // Update the item
-    await ChemicalsModel.findByIdAndUpdate(id, {
-        item_code, item_name, company, purpose, BillNo,
-        total_quantity: updatedTotalQuantity, 
-        current_quantity: updatedCurrentQuantity,
-        min_stock_level, unit_of_measure,
-        expiration_date, location, status, description,
-        barcode, low_stock_alert, expiration_alert_date
-    }, { new: true });
+    await ChemicalsModel.findByIdAndUpdate(id, updatedData, { new: true });
 
-    return { msg: "Chemicals item updated" };
-}
+    return { msg: "Chemicals item updated successfully" };
+  }
 
-    // Get Chemicals items for search
-    static async GetChemicalsItemForSearch() {
-        const data = await ChemicalsModel.find({})
-            .select("item_code item_name company barcode");
+  // Get Chemicals items for search
+  static async GetChemicalsItemForSearch() {
+    const data = await ChemicalsModel.find({}).select(
+      "item_code item_name company"
+    );
 
-        return {
-            items: data
-        };
+    return {
+      items: data,
+    };
+  }
+
+  // Log issued quantity
+  static async LogIssuedQuantity(
+    item_id,
+    issued_quantity,
+    date_issued,
+    user_email
+  ) {
+    if (!mongoose.Types.ObjectId.isValid(item_id)) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Item ID must be a valid MongoDB ObjectId"
+      );
     }
 
-    // Log issued quantity
-    static async LogIssuedQuantity(item_id, issued_quantity, date_issued, user_email) {
-        // Check if item_id is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(item_id)) {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Item ID must be a valid MongoDB ObjectId");
-        }
-
-        // Find the chemical item first
-        const chemical = await ChemicalsModel.findById(item_id);
-        if (!chemical) {
-            throw new ApiError(httpStatus.NOT_FOUND, 'Chemical item not found');
-        }
-
-        // Check if there's enough stock before logging
-        if (chemical.current_quantity < issued_quantity) {
-            throw new ApiError(httpStatus.BAD_REQUEST, 'Issued quantity exceeds current stock.');
-        }
-
-        const logEntry = new ChemicalsLogModel({
-            item: item_id,
-            issued_quantity,
-            date_issued,
-            user_email
-        });
-
-        await logEntry.save();
-
-        // Update the stock in the ChemicalsModel
-        chemical.current_quantity -= issued_quantity;
-
-        if (chemical.current_quantity === 0) {
-            chemical.status = 'Out of Stock';
-        } else if (chemical.current_quantity <= chemical.min_stock_level) {
-            chemical.status = 'Low Stock';
-        } else {
-            chemical.status = 'In Stock'; // Optional, if you want to reset it when above minimum stock
-        }
-
-        await chemical.save();
-
-        return logEntry;
+    const chemical = await ChemicalsModel.findById(item_id);
+    if (!chemical) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Chemical item not found");
     }
 
-
-
-
-    // Get logs
-    static async GetLogs() {
-        const logs = await ChemicalsLogModel.find({})
-            .populate('item', 'item_code item_name') // Populate item details if needed
-            .sort({ date_issued: -1 }); // Sort logs by date (most recent first)
-        return logs;
+    if (chemical.current_quantity < issued_quantity) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Issued quantity exceeds current stock."
+      );
     }
 
-    // Search logs with item code handling
-   // Search logs with item code handling
-static async SearchLogs(item_id, user_email, date_start, date_end) {
+    const logEntry = new ChemicalsLogModel({
+      item: item_id,
+      issued_quantity,
+      date_issued,
+      user_email,
+    });
+
+    await logEntry.save();
+
+    chemical.current_quantity -= issued_quantity;
+
+    if (chemical.current_quantity === 0) {
+      chemical.status = "Out of Stock";
+    } else if (chemical.current_quantity <= chemical.min_stock_level) {
+      chemical.status = "Low Stock";
+    } else {
+      chemical.status = "In Stock";
+    }
+
+    await chemical.save();
+
+    return logEntry;
+  }
+
+  static async GetLogs(filters) {
     const query = {};
 
-    // Check if item_id is an ObjectId
-    if (item_id) {
-        const chemical = await ChemicalsModel.findOne({ item_code: item_id });
-        if (chemical) {
-            query.item = chemical._id; // Set the query to the ObjectId
-        } else {
-            throw new ApiError(httpStatus.NOT_FOUND, "Chemical item not found");
-        }
+    // Use regular expression for partial match on item_code
+    if (filters.item_code) {
+      const chemical = await ChemicalsModel.findOne({
+        item_code: { $regex: filters.item_code, $options: "i" },
+      });
+      if (chemical) query.item = chemical._id;
     }
 
-    if (user_email) {
-        query.user_email = user_email;
+    // Use regular expression for partial match on item_name
+    if (filters.item_name) {
+      const chemical = await ChemicalsModel.findOne({
+        item_name: { $regex: filters.item_name, $options: "i" },
+      });
+      if (chemical) query.item = chemical._id;
     }
 
-    if (date_start || date_end) {
-        query.date_issued = {};
-        if (date_start) {
-            query.date_issued.$gte = new Date(date_start); // Greater than or equal to start date
-        }
-        if (date_end) {
-            query.date_issued.$lte = new Date(date_end); // Less than or equal to end date
-        }
+    // Use regular expression for partial match on user_email
+    if (filters.user_email) {
+      query.user_email = { $regex: filters.user_email, $options: "i" };
     }
 
+    // Filter by a specific date (date_issued)
+    if (filters.date_issued) {
+      const startOfDay = new Date(filters.date_issued);
+      startOfDay.setUTCHours(0, 0, 0, 0); // Set to the start of the day
+      const endOfDay = new Date(filters.date_issued);
+      endOfDay.setUTCHours(23, 59, 59, 999); // Set to the end of the day
+
+      query.date_issued = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    // Fetch logs based on the constructed query, and populate the item with specific fields
     const logs = await ChemicalsLogModel.find(query)
-        .populate('item', 'item_code item_name current_quantity') // Populate item details
-        .sort({ date_issued: -1 }); // Sort logs by date
+      .populate("item", "item_code item_name")
+      .sort({ date_issued: -1 });
 
-    // Filter out logs with deleted items
-    const validLogs = logs.filter(log => log.item !== null);
+    return logs;
+  }
 
-    return validLogs;
-}
-
- // Update chemical log item by ID
- static async UpdateChemicalLogItemById(logId, newIssuedQuantity, user_email, date_issued) {
+  // Update chemical log item by ID
+  static async UpdateChemicalLogItemById(
+    logId,
+    newIssuedQuantity,
+    user_email,
+    date_issued
+  ) {
     if (!mongoose.Types.ObjectId.isValid(logId)) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Log ID must be a valid MongoDB ObjectId");
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Log ID must be a valid MongoDB ObjectId"
+      );
     }
 
-    const logEntry = await ChemicalsLogModel.findById(logId).populate('item');
+    const logEntry = await ChemicalsLogModel.findById(logId).populate("item");
     if (!logEntry) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Log entry not found');
+      throw new ApiError(httpStatus.NOT_FOUND, "Log entry not found");
     }
 
     const chemical = logEntry.item;
     const existingQuantity = logEntry.issued_quantity;
 
-    if (typeof newIssuedQuantity !== 'number' || newIssuedQuantity < 0) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid issued quantity.');
+    if (typeof newIssuedQuantity !== "number" || newIssuedQuantity < 0) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid issued quantity.");
     }
 
-    // Calculate the difference in issued quantity
     const quantityDifference = newIssuedQuantity - existingQuantity;
 
-    // Update the current quantity based on the quantity difference
-    chemical.current_quantity -= quantityDifference; // Decrease for increase in issued quantity; increase for decrease
+    chemical.current_quantity -= quantityDifference;
 
-    // Ensure the updated current quantity does not go negative
     if (chemical.current_quantity < 0) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Issued quantity exceeds current stock.');
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Issued quantity exceeds current stock."
+      );
     }
 
-    // Update the chemical status based on the current quantity
     if (chemical.current_quantity === 0) {
-        chemical.status = 'Out of Stock';
+      chemical.status = "Out of Stock";
     } else if (chemical.current_quantity <= chemical.min_stock_level) {
-        chemical.status = 'Low Stock';
+      chemical.status = "Low Stock";
     } else {
-        chemical.status = 'In Stock';
+      chemical.status = "In Stock";
     }
 
     await chemical.save();
 
-    // Ensure date_issued is a valid date before saving
     if (!date_issued || isNaN(new Date(date_issued).getTime())) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid date issued.');
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid date issued.");
     }
 
     logEntry.issued_quantity = newIssuedQuantity;
     logEntry.user_email = user_email;
-    logEntry.date_issued = new Date(date_issued); // Use the correct field name and format
+    logEntry.date_issued = new Date(date_issued);
     await logEntry.save();
 
     return { msg: "Chemical log updated successfully" };
-}
+  }
 
-// Delete a Chemicals log item by its ID
-static async DeleteChemicalsLogItem(logId) {
+  // Delete a Chemicals log item by its ID
+  static async DeleteChemicalsLogItem(logId) {
     if (!mongoose.Types.ObjectId.isValid(logId)) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Log ID must be a valid MongoDB ObjectId");
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Log ID must be a valid MongoDB ObjectId"
+      );
     }
 
-    // Find the log entry
-    const logEntry = await ChemicalsLogModel.findById(logId).populate('item');
+    const logEntry = await ChemicalsLogModel.findById(logId).populate("item");
     if (!logEntry) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Log entry not found');
+      throw new ApiError(httpStatus.NOT_FOUND, "Log entry not found");
     }
 
     const chemical = logEntry.item;
 
-    // Add the issued quantity back to the current quantity of the chemical
     chemical.current_quantity += logEntry.issued_quantity;
 
-    // Update the chemical status based on the new current quantity
     if (chemical.current_quantity === 0) {
-        chemical.status = 'Out of Stock';
+      chemical.status = "Out of Stock";
     } else if (chemical.current_quantity <= chemical.min_stock_level) {
-        chemical.status = 'Low Stock';
+      chemical.status = "Low Stock";
     } else {
-        chemical.status = 'In Stock';
+      chemical.status = "In Stock";
     }
 
     await chemical.save();
 
-    // Now delete the log entry
     await ChemicalsLogModel.findByIdAndDelete(logId);
 
-    return { msg: 'Log entry deleted successfully' };
-}
-
+    return { msg: "Log entry deleted successfully" };
+  }
 }
 
 module.exports = ChemicalsService;

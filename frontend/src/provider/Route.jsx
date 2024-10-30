@@ -12,6 +12,7 @@ import ResetPassword from "../pages/resetPassword";
 // Chemistry
 import ChemistryPage from "../pages/Chemistry/Home";
 import ChemicalsPage from "../pages/Chemistry/chemicals";
+import ChemicalsRestockPage from "../pages/Chemistry/chemicals/restock.chemicals";
 import ChemicalsLogPage from "../pages/Chemistry/chemicals/log.chemicals";
 import ReagentsLogPage from "../pages/Chemistry/reagents/log.reagents";
 import ReagentsPage from "../pages/Chemistry/reagents";
@@ -83,6 +84,10 @@ export const Routes = createBrowserRouter([
       {
         path: '/chemistry/chemicals',
         element: <ChemicalsPage/>
+      },
+      {
+        path: '/chemistry/chemicals/restock',
+        element: <ChemicalsRestockPage/>
       },
       {
         path: '/chemistry/chemicals/logs',
