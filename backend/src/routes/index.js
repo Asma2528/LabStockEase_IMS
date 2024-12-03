@@ -7,6 +7,10 @@ const routes = [
         route: require("./Auth.route")
     },
     {
+        path: '/vendor',
+        route: require("./Vendors.route")
+    },
+    {
         path: '/chemistry-dashboard',
         route: require("./Chemistry.dashboard.route")
     },
@@ -29,8 +33,12 @@ const routes = [
     {
         path: '/others',
         route: require("./Others.route")
+    },    
+    {
+        path: '/chemistry-requisition', 
+        route: require("./Chemistry.Requisition.route")
     }
-    // Add other routes here as needed
+
 ];
 
 // Loop through the routes and use them in the router

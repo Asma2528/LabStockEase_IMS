@@ -12,6 +12,8 @@ import { GlasswareApi } from "./queries/Glassware.query"; // RTK Query API servi
 import { MeasuringApi } from "./queries/Measuring.query"; // RTK Query API service for measuring data
 import { OthersApi } from "./queries/Others.query"; // RTK Query API service for other data
 import { ChemistryDashboardApi } from "./queries/Chemistry.dashboard.query"; // RTK Query API service for chemistry dashboard data
+import { ChemistryRequisitionApi } from "./queries/ChemistryRequisition.query";
+import { VendorApi } from "./queries/Vendors.query";
 
 // Configure the Redux store
 export const store = configureStore({
@@ -21,13 +23,16 @@ export const store = configureStore({
         sidebar: SidebarSlice, // Slice for managing sidebar state
 
         // Add RTK Query API services reducers to the store
-        [AuthApi.reducerPath]: AuthApi.reducer, // Reducer for AuthApi, handles authentication-related API state
+        [AuthApi.reducerPath]: AuthApi.reducer,
+        [VendorApi.reducerPath]: VendorApi.reducer,
+         // Reducer for AuthApi, handles authentication-related API state
         [ChemicalsApi.reducerPath]: ChemicalsApi.reducer, // Reducer for ChemicalsApi, handles chemicals-related API state
         [ReagentsApi.reducerPath]: ReagentsApi.reducer, // Reducer for ReagentsApi, handles reagents-related API state
         [GlasswareApi.reducerPath]: GlasswareApi.reducer, // Reducer for GlasswareApi, handles glassware-related API state
         [MeasuringApi.reducerPath]: MeasuringApi.reducer, // Reducer for MeasuringApi, handles measuring-related API state
         [OthersApi.reducerPath]: OthersApi.reducer, // Reducer for OthersApi, handles miscellaneous API state
         [ChemistryDashboardApi.reducerPath]: ChemistryDashboardApi.reducer, // Reducer for ChemistryDashboardApi, handles chemistry dashboard-related API state
+        [ChemistryRequisitionApi.reducerPath]: ChemistryRequisitionApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         // Configure middleware for the store
@@ -38,7 +43,9 @@ export const store = configureStore({
             .concat(GlasswareApi.middleware) // Add middleware for GlasswareApi
             .concat(MeasuringApi.middleware) // Add middleware for MeasuringApi
             .concat(OthersApi.middleware) // Add middleware for OthersApi
-            .concat(ChemistryDashboardApi.middleware), // Add middleware for ChemistryDashboardApi
+            .concat(ChemistryDashboardApi.middleware)
+            .concat(ChemistryRequisitionApi.middleware)
+            .concat(VendorApi.middleware),// Add middleware for ChemistryDashboardApi
 });
 
 // Set up listeners for RTK Query to handle automatic refetching and other actions

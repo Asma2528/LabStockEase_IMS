@@ -15,7 +15,7 @@ const ReagentsPage = () => {
     const [visible, setVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [dialogVisible, setDialogVisible] = useState(false);
-    
+
     const navigate = useNavigate();
     const [Search, setSearch] = useState('');
 
@@ -28,6 +28,7 @@ const ReagentsPage = () => {
         e.preventDefault();
         navigate(`/Reagents?query=${Search}`);
     };
+    
 
     const [DeleteReagentsItem] = useDeleteReagentsItemMutation();
 

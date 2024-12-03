@@ -109,6 +109,7 @@ const Register = () => {
     <option value='botany'>Botany</option>
     <option value='microbiology'>Microbiology</option>
     <option value='lifescience'>Life Science</option>
+    <option value='chemistry-faculty'>Chemistry Faculty</option>
   </Field>
   <ErrorMessage component={'p'} className='text-red-500 text-sm' name='role' />
 </div>

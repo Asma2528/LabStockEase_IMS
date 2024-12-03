@@ -5,6 +5,10 @@ import { Link, useLocation } from 'react-router-dom';
 const breadcrumbMap = {
   '/': 'Dashboard',
   '/chemistry': 'Chemistry',
+  '/vendors': 'Vendors',
+  '/chemistry/admin-requisition': 'All Requisitions',
+  '/chemistry/approved-requisition': 'Approved Requisitions',
+  '/chemistry/requisition': 'Requisition',
   '/chemistry/chemicals': 'Chemicals',
   '/chemistry/chemicals/restock': 'Chemicals Restock',
   '/chemistry/chemicals/logs': 'Chemical Logs',

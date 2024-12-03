@@ -13,24 +13,29 @@ function App() {
   const selector = useSelector(UserSlicePath);
 
   const fetchUser = async (token) => {
+    // console.log("Fetching user with token:", token);
     try {
       const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
+      // console.log('Fetched user data:', data);
       dispatch(setUser(data.user));
       SetLoading(false);
     } catch (error) {
-      console.log(error);
+      // console.error("Error fetching user data:", error);
+      // console.error("Error response data:", error.response?.data); // Log additional details
       navigate("/login");
     }
   };
+  
+  
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token") || '';
-
+// console.log("token fetched from localstorage: ",token);
     if (!token) {
       navigate("/login");
     } else {

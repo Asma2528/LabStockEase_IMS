@@ -20,7 +20,7 @@ const Schema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'chemistry', 'physics', 'biology', 'botany', 'microbiology', 'lifescience'],
+        enum: ['admin', 'chemistry', 'physics', 'biology', 'botany', 'microbiology', 'lifescience','chemistry-faculty','stores'],
         required: [true, "Role is required"]
     },
     resetPasswordToken: String,

@@ -28,30 +28,41 @@ const Login = () => {
 
   const OnSubmitHandler = async (values, { resetForm }) => {
     try {
-  
         const { data, error } = await LoginUser(values);
         if (error) {
             toast.error(error?.data?.message || 'An error occurred');
             return;
         }
-        localStorage.setItem("token", data.token);
 
-        // Dispatch user email and role (adjust as needed based on available data)
+        // Store token and user role in local storage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+
+        // Dispatch user email and role
         dispatch(setUser({
-            email: data.email, // Use the email from the response
-            role: 'unknown', // Adjust or remove if role is not provided
+            email: data.email,
+            role: data.role,
         }));
         
         toast.success('User Login Successful');
+
         resetForm();
-        navigate("/");
+        
+        // Conditional Navigation Based on Role
+        if (data.role === 'admin') {
+          navigate("/");
+        }
+        else if (data.role === 'chemistry-faculty') {
+            navigate("/chemistry/requisition");
+        } else if (data.role === 'chemistry') {
+            navigate("/chemistry");
+        }
     } catch (error) {
         toast.error(error.message);
     } finally {
         RecaptchaRef.current.reset();
     }
-};
-
+  };
 
   return (
     <div className='min-h-screen flex items-center justify-center w-full bg-blue-100'>

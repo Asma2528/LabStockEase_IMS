@@ -8,9 +8,13 @@ import Home from "../pages/Home/index";
 import ErrorPage from "../pages/Error";
 import ForgotPassword from "../pages/forgotPassword";
 import ResetPassword from "../pages/resetPassword";
+import Unauthorized from "../pages/Unauthorized";
 
 // Chemistry
 import ChemistryPage from "../pages/Chemistry/Home";
+import ChemistryRequisitionPage from "../pages/Chemistry/Requisition/index";
+import ChemistryAdminRequisitionPage from "../pages/Chemistry/Requisition/adminRequisition"
+import ChemistryApprovedRequisitionPage from "../pages/Chemistry/Requisition/approvedRequisition"
 import ChemicalsPage from "../pages/Chemistry/chemicals";
 import ChemicalsRestockPage from "../pages/Chemistry/chemicals/restock.chemicals";
 import ChemicalsLogPage from "../pages/Chemistry/chemicals/log.chemicals";
@@ -19,52 +23,8 @@ import ReagentsPage from "../pages/Chemistry/reagents";
 import GlasswarePage from "../pages/Chemistry/glassware";
 import MeasuringPage from "../pages/Chemistry/measuring";
 import OthersPage from "../pages/Chemistry/others";
+import VendorsPage from "../pages/Vendors/index"
 
-// import Glassware from "../pages/Chemistry/Glassware";
-// import Measuring from "../pages/Chemistry/Measuring";
-// import OthersChemistry from "../pages/Chemistry/Others";
-
-// // Physics
-// import PhysicsPage from "../pages/Physics";
-// import Instruments from "../pages/Physics/Instruments";
-// import Materials from "../pages/Physics/Materials";
-// import Electronics from "../pages/Physics/Electronics";
-// import Optical from "../pages/Physics/Optical";
-// import OthersPhysics from "../pages/Physics/Others";
-
-// // Biology
-// import BiologyPage from "../pages/Biology";
-// import Microscopes from "../pages/Biology/Microscopes";
-// import Specimens from "../pages/Biology/Specimens";
-// import Stains from "../pages/Biology/Stains";
-// import Dissection from "../pages/Biology/Dissection";
-// import Slides from "../pages/Biology/Slides";
-// import OthersBiology from "../pages/Biology/Others";
-
-// // Botany
-// import BotanyPage from "../pages/Botany";
-// import PlantSpecimens from "../pages/Botany/PlantSpecimens";
-// import Seeds from "../pages/Botany/Seeds";
-// import Herbarium from "../pages/Botany/Herbarium";
-// import Fertilizers from "../pages/Botany/Fertilizers";
-// import Equipment from "../pages/Botany/Equipment";
-// import OthersBotany from "../pages/Botany/Others";
-
-// // Microbiology
-// import MicrobiologyPage from "../pages/Microbiology";
-// import Cultures from "../pages/Microbiology/Cultures";
-// import PetriDishes from "../pages/Microbiology/PetriDishes";
-// import AgarMedia from "../pages/Microbiology/AgarMedia";
-// import Incubators from "../pages/Microbiology/Incubators";
-// import Sterilization from "../pages/Microbiology/Sterilization";
-// import OthersMicrobiology from "../pages/Microbiology/Others";
-
-// // Life Science
-// import LifeSciencePage from "../pages/LifeScience";
-// import ChemicalsLife from "../pages/LifeScience/Chemicals";
-// import SpecimensLife from "../pages/LifeScience/Specimens";
-// import EquipmentLife from "../pages/LifeScience/Equipment";
-// import OthersLifeScience from "../pages/LifeScience/Others";
 
 export const Routes = createBrowserRouter([
   {
@@ -73,112 +33,62 @@ export const Routes = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Home /> 
+        element: <AuthorizedRoute element={<Home />} allowedRoles={['admin']} />
       },
 
       // Chemistry Routes
       {
         path: '/chemistry',
-        element: <ChemistryPage />
+        element: <AuthorizedRoute element={<ChemistryPage />} allowedRoles={['admin', 'chemistry']} />
+      },
+      {
+        path: '/vendors',
+        element: <AuthorizedRoute element={<VendorsPage />} allowedRoles={['admin']} />
       },
       {
         path: '/chemistry/chemicals',
-        element: <ChemicalsPage/>
+        element: <AuthorizedRoute element={<ChemicalsPage />} allowedRoles={['admin', 'chemistry']} />
+      },
+      {
+        path: '/chemistry/requisition',
+        element: <AuthorizedRoute element={<ChemistryRequisitionPage />} allowedRoles={['chemistry', 'chemistry-faculty']} />
+      },
+      {
+        path: '/chemistry/admin-requisition',
+        element: <AuthorizedRoute element={<ChemistryAdminRequisitionPage />} allowedRoles={['admin']} />
+      },
+      {
+        path: '/chemistry/approved-requisition',
+        element: <AuthorizedRoute element={<ChemistryApprovedRequisitionPage />} allowedRoles={['chemistry']} />
       },
       {
         path: '/chemistry/chemicals/restock',
-        element: <ChemicalsRestockPage/>
+        element: <AuthorizedRoute element={<ChemicalsRestockPage />} allowedRoles={['admin', 'chemistry']} />
       },
       {
         path: '/chemistry/chemicals/logs',
-        element: <ChemicalsLogPage/>
+        element: <AuthorizedRoute element={<ChemicalsLogPage />} allowedRoles={['admin', 'chemistry']} />
       },
       {
         path: '/chemistry/reagents',
-        element: <ReagentsPage/>
+        element: <AuthorizedRoute element={<ReagentsPage />} allowedRoles={['admin', 'chemistry']} />
       },
       {
         path: '/chemistry/reagents/logs',
-        element: <ReagentsLogPage/>
+        element: <AuthorizedRoute element={<ReagentsLogPage />} allowedRoles={['admin', 'chemistry']} />
       },
       {
         path: '/chemistry/glassware',
-        element: <GlasswarePage/>
+        element: <AuthorizedRoute element={<GlasswarePage />} allowedRoles={['admin', 'chemistry']} />
       },
       {
         path: '/chemistry/measuring',
-        element: <MeasuringPage/>
+        element: <AuthorizedRoute element={<MeasuringPage />} allowedRoles={['admin', 'chemistry']} />
       },
       {
         path: '/chemistry/others',
-        element: <OthersPage/>
+        element: <AuthorizedRoute element={<OthersPage />} allowedRoles={['admin', 'chemistry']} />
       },
-      // // Physics Routes
-      // {
-      //   path: '/physics',
-      //   element: <PhysicsPage />,
-      //   children: [
-      //     { path: 'instruments', element: <Instruments /> },
-      //     { path: 'materials', element: <Materials /> },
-      //     { path: 'electronics', element: <Electronics /> },
-      //     { path: 'optical', element: <Optical /> },
-      //     { path: 'others', element: <OthersPhysics /> },
-      //   ],
-      // },
-
-      // // Biology Routes
-      // {
-      //   path: '/biology',
-      //   element: <BiologyPage />,
-      //   children: [
-      //     { path: 'microscopes', element: <Microscopes /> },
-      //     { path: 'specimens', element: <Specimens /> },
-      //     { path: 'stains', element: <Stains /> },
-      //     { path: 'dissection', element: <Dissection /> },
-      //     { path: 'slides', element: <Slides /> },
-      //     { path: 'others', element: <OthersBiology /> },
-      //   ],
-      // },
-
-      // // Botany Routes
-      // {
-      //   path: '/botany',
-      //   element: <BotanyPage />,
-      //   children: [
-      //     { path: 'plant-specimens', element: <PlantSpecimens /> },
-      //     { path: 'seeds', element: <Seeds /> },
-      //     { path: 'herbarium', element: <Herbarium /> },
-      //     { path: 'fertilizers', element: <Fertilizers /> },
-      //     { path: 'equipment', element: <Equipment /> },
-      //     { path: 'others', element: <OthersBotany /> },
-      //   ],
-      // },
-
-      // // Microbiology Routes
-      // {
-      //   path: '/microbiology',
-      //   element: <MicrobiologyPage />,
-      //   children: [
-      //     { path: 'cultures', element: <Cultures /> },
-      //     { path: 'petri-dishes', element: <PetriDishes /> },
-      //     { path: 'agar-media', element: <AgarMedia /> },
-      //     { path: 'incubators', element: <Incubators /> },
-      //     { path: 'sterilization', element: <Sterilization /> },
-      //     { path: 'others', element: <OthersMicrobiology /> },
-      //   ],
-      // },
-
-      // // Life Science Routes
-      // {
-      //   path: '/lifescience',
-      //   element: <LifeSciencePage />,
-      //   children: [
-      //     { path: 'chemicals', element: <ChemicalsLife /> },
-      //     { path: 'specimens', element: <SpecimensLife /> },
-      //     { path: 'equipment', element: <EquipmentLife /> },
-      //     { path: 'others', element: <OthersLifeScience /> },
-      //   ],
-      // },
 
       // Error Page
       {
@@ -202,7 +112,9 @@ export const Routes = createBrowserRouter([
   {
     path: '/reset-password/:token',
     element: <ResetPassword />
+  },
+  {
+    path: '/unauthorized',
+    element: <Unauthorized />
   }
-
-
 ]);

@@ -9,7 +9,7 @@ class AuthService {
   static async RegisterUser(body) {
     const { email, password, name, role, token } = body;
 
-    if (!role || !['admin', 'chemistry', 'physics', 'biology', 'botany', 'microbiology', 'lifescience'].includes(role)) {
+    if (!role || !['admin', 'chemistry', 'physics', 'biology', 'botany', 'microbiology', 'lifescience','chemistry-faculty'].includes(role)) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Valid role is required");
     }
 
@@ -89,6 +89,7 @@ class AuthService {
     return {
       msg: "User Login Successful",
       token: tokend,
+      role: checkExist.role,
     };
   }
 

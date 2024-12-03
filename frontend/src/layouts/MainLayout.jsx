@@ -15,6 +15,7 @@ import { SidebarSlicePath, toggleSidebar } from '../provider/slice/Sidebar.slice
 import { Link } from 'react-router-dom';
 import { IoIosArrowDropright, IoIosArrowDropleft } from 'react-icons/io';
 import { fetchUserData } from '../provider/slice/user.slice'; // Import user slice
+import { MdPersonAddAlt } from "react-icons/md";
 
 const MainLayout = ({ children }) => {
   const selector = useSelector(SidebarSlicePath) || { collapsed: false, toggle: false };
@@ -33,6 +34,7 @@ const MainLayout = ({ children }) => {
             <MenuItem className="hover:bg-blue-100" component={<Link to="/" />} icon={<MdOutlineSpaceDashboard className="text-2xl" />}>
               Dashboard
             </MenuItem>
+            <MenuItem component={<Link to="/vendors" />} icon={<MdPersonAddAlt  className="text-2xl" />}>Vendors</MenuItem>
             <SubMenu label="Chemistry" icon={<SlChemistry className="text-2xl" />}>
               <MenuItem component={<Link to="/chemistry" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/chemistry/chemicals" />}>Chemicals</MenuItem>
@@ -40,6 +42,7 @@ const MainLayout = ({ children }) => {
               <MenuItem component={<Link to="/chemistry/glassware" />}>Glassware</MenuItem>
               <MenuItem component={<Link to="/chemistry/measuring" />}>Measuring</MenuItem>
               <MenuItem component={<Link to="/chemistry/others" />}>Others</MenuItem>
+              <MenuItem component={<Link to="/chemistry/admin-requisition" />}>Requisitions</MenuItem>
             </SubMenu>
             <SubMenu label="Physics" icon={<GiMaterialsScience className="text-2xl" />}>
               <MenuItem component={<Link to="/physics" />}>Dashboard</MenuItem>
@@ -89,9 +92,6 @@ const MainLayout = ({ children }) => {
       case 'chemistry':
         return (
           <>
-            <MenuItem className="hover:bg-blue-100" component={<Link to="/" />} icon={<MdOutlineSpaceDashboard className="text-2xl" />}>
-              Dashboard
-            </MenuItem>
             <SubMenu label="Chemistry" icon={<SlChemistry className="text-2xl" />}>
               <MenuItem component={<Link to="/chemistry" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/chemistry/chemicals" />}>Chemicals</MenuItem>
@@ -99,15 +99,22 @@ const MainLayout = ({ children }) => {
               <MenuItem component={<Link to="/chemistry/glassware" />}>Glassware</MenuItem>
               <MenuItem component={<Link to="/chemistry/measuring" />}>Measuring</MenuItem>
               <MenuItem component={<Link to="/chemistry/others" />}>Others</MenuItem>
+              <MenuItem component={<Link to="/chemistry/requisition" />}>Requisition</MenuItem>
+              <MenuItem component={<Link to="/chemistry/approved-requisition" />}>Approved Requisitions</MenuItem>
             </SubMenu>
           </>
         );
+        case 'chemistry-faculty':
+          return (
+            <>
+              <SubMenu label="Chemistry" icon={<SlChemistry className="text-2xl" />}>
+                <MenuItem component={<Link to="/chemistry/requisition" />}>Requisition</MenuItem>
+              </SubMenu>
+            </>
+          );
       case 'physics':
         return (
           <>
-            <MenuItem className="hover:bg-blue-100" component={<Link to="/" />} icon={<MdOutlineSpaceDashboard className="text-2xl" />}>
-              Dashboard
-            </MenuItem>
             <SubMenu label="Physics" icon={<GiMaterialsScience className="text-2xl" />}>
               <MenuItem component={<Link to="/physics" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/physics/instruments" />}>Instruments</MenuItem>
@@ -121,9 +128,6 @@ const MainLayout = ({ children }) => {
       case 'biology':
         return (
           <>
-            <MenuItem className="hover:bg-blue-100" component={<Link to="/" />} icon={<MdOutlineSpaceDashboard className="text-2xl" />}>
-              Dashboard
-            </MenuItem>
             <SubMenu label="Biology" icon={<RiMedicineBottleLine className="text-2xl" />}>
               <MenuItem component={<Link to="/biology" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/biology/microscopes" />}>Microscopes</MenuItem>
@@ -138,9 +142,6 @@ const MainLayout = ({ children }) => {
       case 'botany':
         return (
           <>
-            <MenuItem className="hover:bg-blue-100" component={<Link to="/" />} icon={<MdOutlineSpaceDashboard className="text-2xl" />}>
-              Dashboard
-            </MenuItem>
             <SubMenu label="Botany" icon={<PiPlant className="text-2xl" />}>
               <MenuItem component={<Link to="/botany" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/botany/plant-specimens" />}>Plant Specimens</MenuItem>
@@ -155,9 +156,6 @@ const MainLayout = ({ children }) => {
       case 'microbiology':
         return (
           <>
-            <MenuItem className="hover:bg-blue-100" component={<Link to="/" />} icon={<MdOutlineSpaceDashboard className="text-2xl" />}>
-              Dashboard
-            </MenuItem>
             <SubMenu label="Microbiology" icon={<FaVirus className="text-xl" />}>
               <MenuItem component={<Link to="/microbiology" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/microbiology/cultures" />}>Microbial Cultures</MenuItem>
@@ -172,9 +170,6 @@ const MainLayout = ({ children }) => {
       case 'lifescience':
         return (
           <>
-            <MenuItem className="hover:bg-blue-100" component={<Link to="/" />} icon={<MdOutlineSpaceDashboard className="text-2xl" />}>
-              Dashboard
-            </MenuItem>
             <SubMenu label="Life Science" icon={<MdOutlineScience className="text-2xl" />}>
               <MenuItem component={<Link to="/lifescience" />}>Dashboard</MenuItem>
               <MenuItem component={<Link to="/lifescience/chemicals" />}>Chemicals</MenuItem>
