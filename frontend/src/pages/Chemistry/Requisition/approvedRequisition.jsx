@@ -13,15 +13,18 @@ const ChemistryApprovedRequisitionPage = () => {
         date_of_requirement: '',
         createdAt: '',
         faculty_email: '',
-        status:''
+        status:'',
+        remark:''
     });
 
+    
     const { isLoading, data, refetch } = useGetApprovedAndIssuedRequisitionsQuery(searchParams);
     const [changeStatus] = useChangeStatusToIssuedMutation();
     const [editingRequisitionId, setEditingRequisitionId] = useState(null);
     const [statusValue, setStatusValue] = useState('');
-
+    
     const requisitions = useMemo(() => data?.requisitions || [], [data]);
+    console.log(requisitions);
 
     useEffect(() => {
         if (editingRequisitionId) {
@@ -89,16 +92,17 @@ const ChemistryApprovedRequisitionPage = () => {
             <div className="mt-10 flex justify-center w-full mx-auto">
                 <form className="flex flex-wrap justify-center gap-x-2 gap-y-2 mb-4 w-full">
                     {/* Search inputs */}
-                    <input name="item_name" placeholder="Item Name" className="w-1/6 p-1 border rounded" onChange={handleSearchChange} value={searchParams.item_name || ''} />
-                    <input name="purpose" placeholder="Purpose" className="w-1/6 p-1 border rounded" onChange={handleSearchChange} value={searchParams.purpose || ''} />
+                    <input name="item_name" placeholder="Item Name" className="w-1/12 p-1 border rounded" onChange={handleSearchChange} value={searchParams.item_name || ''} />
+                    <input name="purpose" placeholder="Purpose" className="w-1/12 p-1 border rounded" onChange={handleSearchChange} value={searchParams.purpose || ''} />
                     <input name="date_of_requirement" type="text" placeholder="Date of Requirement" className="w-1/6 p-1 border rounded" onFocus={(e) => (e.target.type = "date")} onBlur={(e) => (e.target.type = "text")} onChange={handleSearchChange} value={searchParams.date_of_requirement || ''} />
                     <input name="createdAt" type="text" placeholder="Requested On" className="w-1/6 p-1 border rounded" onFocus={(e) => (e.target.type = "date")} onBlur={(e) => (e.target.type = "text")} onChange={handleSearchChange} value={searchParams.createdAt || ''} />
                     <input name="faculty_email" placeholder="Faculty Email" className="w-1/6 p-1 border rounded" onChange={handleSearchChange} value={searchParams.faculty_email || ''} />
-                    <select name="status" className="w-1/7 p-2 border rounded text-slate-400 focus:text-black" onChange={handleSearchChange} placeholder="Select Status " value={searchParams.status || ''}>
+                    <select name="status" className="w-1/6 p-2 border rounded text-slate-400 focus:text-black" onChange={handleSearchChange} placeholder="Select Status " value={searchParams.status || ''}>
                         <option value="">Select Status</option>
                         <option value="Approved">Approved</option>
                         <option value="Issued">Issued</option>
                     </select>
+                    <input name="remark" placeholder="Remark" className="w-1/12 p-1 border rounded" onChange={handleSearchChange} value={searchParams.remark || ''} />
                 </form>
             </div>
 
@@ -117,6 +121,7 @@ const ChemistryApprovedRequisitionPage = () => {
                                     <th className="px-4 py-2">Faculty Email</th>
                                     <th className="px-4 py-2">Requested On</th>
                                     <th className="px-4 py-2">Approved By</th>
+                                    <th className="px-4 py-2">Remarks</th>
                                     <th className="px-4 py-2">Status</th>
                                 </tr>
                             </thead>
@@ -131,6 +136,7 @@ const ChemistryApprovedRequisitionPage = () => {
                                             <td className="px-4 py-2">{requisition.faculty_email}</td>
                                             <td className="px-4 py-2">{new Date(requisition.createdAt).toLocaleDateString()}</td>
                                             <td className="px-4 py-2">{requisition.approved_by}</td>
+                                            <td className="px-4 py-2">{requisition.remark}</td>
                                             <td className="px-4 py-2">
                                                 <select value={requisition._id === editingRequisitionId ? statusValue : requisition.status} onChange={(e) => {
                                                     if (requisition.status === 'Issued') {

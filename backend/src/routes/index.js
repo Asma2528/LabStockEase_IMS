@@ -37,6 +37,10 @@ const routes = [
     {
         path: '/chemistry-requisition', 
         route: require("./Chemistry.Requisition.route")
+    },
+    {
+        path: '/notification', 
+        route: require("./Notification.route")
     }
 
 ];

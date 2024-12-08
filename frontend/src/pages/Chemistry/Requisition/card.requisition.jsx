@@ -58,6 +58,7 @@ ChemistryRequisitionCard.propTypes = {
         createdAt: PropTypes.string.isRequired,
         date_of_requirement: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
+        remark: PropTypes.string,
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
 };

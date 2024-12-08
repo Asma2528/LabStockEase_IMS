@@ -14,6 +14,7 @@ import { OthersApi } from "./queries/Others.query"; // RTK Query API service for
 import { ChemistryDashboardApi } from "./queries/Chemistry.dashboard.query"; // RTK Query API service for chemistry dashboard data
 import { ChemistryRequisitionApi } from "./queries/ChemistryRequisition.query";
 import { VendorApi } from "./queries/Vendors.query";
+import { NotificationApi } from "./queries/Notification.query";
 
 // Configure the Redux store
 export const store = configureStore({
@@ -33,6 +34,7 @@ export const store = configureStore({
         [OthersApi.reducerPath]: OthersApi.reducer, // Reducer for OthersApi, handles miscellaneous API state
         [ChemistryDashboardApi.reducerPath]: ChemistryDashboardApi.reducer, // Reducer for ChemistryDashboardApi, handles chemistry dashboard-related API state
         [ChemistryRequisitionApi.reducerPath]: ChemistryRequisitionApi.reducer,
+        [NotificationApi.reducerPath]: NotificationApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         // Configure middleware for the store
@@ -45,6 +47,7 @@ export const store = configureStore({
             .concat(OthersApi.middleware) // Add middleware for OthersApi
             .concat(ChemistryDashboardApi.middleware)
             .concat(ChemistryRequisitionApi.middleware)
+            .concat(NotificationApi.middleware)
             .concat(VendorApi.middleware),// Add middleware for ChemistryDashboardApi
 });
 

@@ -9,7 +9,8 @@ const chemistryRequisitionSchema = new mongoose.Schema({
     status: { type: String, enum: ['Pending', 'Approved', 'Rejected','Issued'], default: 'Pending' }, // Request status
     approved_by: { type: String }, // Admin email
    issued_by: { type: String  }, // Admin email
-    approved_at: { type: Date }
+    approved_at: { type: Date },
+    remark:{type:String}
 }, {
     timestamps: true
 });

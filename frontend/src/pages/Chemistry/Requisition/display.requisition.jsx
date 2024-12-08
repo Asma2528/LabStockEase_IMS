@@ -47,6 +47,12 @@ const ViewItem = ({ visible, setVisible, requisition }) => {
                     <input id="status" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" value={requisition.status} disabled />
                 </div>
 
+
+                <div className="mb-3">
+                    <label htmlFor="status">Remarks</label>
+                    <input id="status" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" value={requisition.remarks} disabled />
+                </div>
+
                 <div className="mb-3">
                     <label htmlFor="createdAt">Created At</label>
                     <input id="createdAt" type="text" className="w-full px-5 py-2 rounded-md outline-none border-1 border" value={formatDate(requisition.createdAt)} disabled />
@@ -70,6 +76,7 @@ ViewItem.propTypes = {
         purpose: PropTypes.string,
         date_of_requirement: PropTypes.string,
         status: PropTypes.string,
+        remarks: PropTypes.string,
         createdAt: PropTypes.string,
         updatedAt: PropTypes.string,
     }).isRequired,

@@ -3,9 +3,12 @@ import BreadCrumbs from '../../../components/BreadCrumbs';
 import { useGetAllRequisitionsQuery, useApproveRequisitionMutation } from '../../../provider/queries/ChemistryRequisition.query';
 import Loader from '../../../components/Loader';
 import { toast } from 'sonner';
-import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog';
+import {  ConfirmDialog } from 'primereact/confirmdialog';
 import { Button } from 'primereact/button';
 import React from 'react';
+import { FaRegEdit} from 'react-icons/fa';
+import { LuView } from 'react-icons/lu';
+
 
 const ChemistryAdminRequisitionPage = () => {
     const [searchParams, setSearchParams] = useState({
@@ -16,29 +19,50 @@ const ChemistryAdminRequisitionPage = () => {
         faculty_email: '',
         status: ''
     });
-    
 
     const { isLoading, data, refetch } = useGetAllRequisitionsQuery(searchParams);
     const [approveRequisition] = useApproveRequisitionMutation();
-    const [editingRequisitionId, setEditingRequisitionId] = useState(null);
     const [statusValue, setStatusValue] = useState('');
     const [expandedRow, setExpandedRow] = useState(null);
+    const [remark, setRemarks] = useState('');
+    const [isDialogVisible, setIsDialogVisible] = useState(false);
+    const [selectedRequisitionId, setSelectedRequisitionId] = useState(null); // New state for selected requisition ID
+
+    const requisitions = useMemo(() => data?.requisitions || [], [data]);
+
+    const handleStatusChange = (id, newStatus) => {
+        setStatusValue(newStatus);  // Set the new status
+        setSelectedRequisitionId(id);  // Store the requisition ID to update
+        setRemarks('');  // Clear remark when status is being changed
+        setIsDialogVisible(true);  // Show the dialog
+    };
+
+    const handleDialogConfirm = async () => {
+
+
+        try {
+            const response = await approveRequisition({
+                id: selectedRequisitionId,
+                updateData: { status: statusValue, remark }
+            });
+
+            if (response.error) {
+                toast.error('Failed to update status');
+            } else {
+                toast.success('Status updated successfully');
+                refetch();  // Refetch requisitions after update
+            }
+        } catch (error) {
+            toast.error('An unexpected error occurred');
+        } finally {
+            setIsDialogVisible(false);  // Close the dialog after the action
+            setSelectedRequisitionId(null); // Clear the selected requisition ID
+        }
+    };
 
     const toggleExpandRow = (id) => {
         setExpandedRow(expandedRow === id ? null : id);
     };
-    
-
-
-    const requisitions = useMemo(() => data?.requisitions || [], [data]);
-
-    
-    useEffect(() => {
-        if (editingRequisitionId) {
-            const requisition = requisitions.find(req => req._id === editingRequisitionId);
-            setStatusValue(requisition ? requisition.status : '');
-        }
-    }, [editingRequisitionId, requisitions]);
 
     const handleSearchChange = (e) => {
         const { name, value } = e.target;
@@ -52,46 +76,6 @@ const ChemistryAdminRequisitionPage = () => {
         refetch();
     }, [refetch, searchParams]);
 
-    const handleStatusChange = (id, newStatus) => {
-        confirmDialog({
-            message: `Are you sure you want to change the status to "${newStatus}"?`,
-            header: 'Confirm Status Change',
-            icon: 'pi pi-exclamation-triangle',
-            breakpoints: { '960px': '75vw', '640px': '90vw' },
-            footer: (
-                <div className="p-dialog-footer flex justify-end gap-2">
-                    <Button
-                        label="No"
-                        icon="pi pi-times"
-                        className="p-button-secondary p-2 rounded-md bg-red-500 text-white inline-flex items-center"
-                        onClick={() => {
-                            toast.info('Status change canceled');
-                            setEditingRequisitionId(null);
-                           
-                        }}
-                    />
-                    <Button
-                        label="Yes"
-                        icon="pi pi-check"
-                        className="p-button-danger p-2 rounded-md bg-green-600 text-white inline-flex items-center"
-                        onClick={async () => {
-                            try {
-                                const response = await approveRequisition({ id, updateData: { status: newStatus } });
-                                if (response.error) {
-                                    toast.error('Failed to update status');
-                                } else {
-                                    toast.success('Status updated successfully');
-                                    refetch();
-                                }
-                            } catch (error) {
-                                toast.error('An unexpected error occurred');
-                            } 
-                        }}
-                    />
-                </div>
-            ),
-        });
-    };
 
     return (
         <div className="w-full flex flex-wrap justify-evenly mt-10">
@@ -188,34 +172,38 @@ const ChemistryAdminRequisitionPage = () => {
                     <td className="px-4 py-2">{requisition.faculty_email}</td>
                     <td className="px-4 py-2">{requisition.issued_by || 'N/A'}</td>
                     <td className="px-4 py-2">
-                        <select
-                            value={requisition._id === editingRequisitionId ? statusValue : requisition.status}
-                            onChange={(e) => {
-                                if (requisition.status === 'Issued') {
-                                    toast.error('Status cannot be modified once issued');
-                                } else {
-                                    setEditingRequisitionId(requisition._id);
-                                    handleStatusChange(requisition._id, e.target.value);
-                                }
-                            }}
-                            className="p-2 border rounded"
-                            disabled={requisition.status === 'Issued'}
-                        >
-                            <option value="Pending">Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
-                            <option value="Issued">Issued</option>
-                        </select>
+                    {requisition.status}
+                      
                     </td>
                     {/* Button to toggle row expansion */}
                     <td className="px-4 py-2 text-center">
-                        <button
-                            className="text-blue-500 underline"
-                            onClick={() => toggleExpandRow(requisition._id)}
-                        >
-                            {expandedRow === requisition._id ? 'Hide Details' : 'Show Details'}
-                        </button>
-                    </td>
+                    <div className="flex items-center">
+    {/* View Button */}
+    <Button
+        onClick={() => toggleExpandRow(requisition._id)}
+        title="View"
+        className="p-3 bg-indigo-500 text-white rounded-sm mx-2"
+    >
+        <LuView className="text-xl" />
+    </Button>
+
+    {/* Edit Button */}
+<Button
+    onClick={() => handleStatusChange(requisition._id)}
+    title="Edit"
+    className={`p-3 ${
+        ["Approved", "Rejected", "Issued"].includes(requisition.status)
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-lime-400"
+    } text-white rounded-sm mx-2`}
+    disabled={["Approved", "Rejected", "Issued"].includes(requisition.status)} // Disable for specific statuses
+>
+    <FaRegEdit className="text-xl" />
+</Button>
+
+    </div>
+</td>
+
                 </tr>
 
                 {/* Expanded Row */}
@@ -232,7 +220,7 @@ const ChemistryAdminRequisitionPage = () => {
             <p><strong>Requested By:</strong> {requisition.faculty_email}</p>
             <p><strong>Approved By:</strong> {requisition.approved_by || 'N/A'}</p>
             <p><strong>Issued By:</strong> {requisition.issued_by || 'N/A'}</p>
-         
+            <p><strong>Remarks:</strong> {requisition.remark || 'N/A'}</p>
             <p><strong>Status:</strong> {requisition.status}</p>
           
         </div>
@@ -255,8 +243,64 @@ const ChemistryAdminRequisitionPage = () => {
                     </div>
                 )}
             </div>
-            <ConfirmDialog />
+            <ConfirmDialog
+    visible={isDialogVisible}
+    onHide={() => setIsDialogVisible(false)}
+    message={
+        <>
+            <p>Are you sure you want to change the status to <strong>{statusValue}</strong>?</p>
+            <div className="mt-4">
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+                    Select New Status
+                </label>
+                <select
+                    id="status"
+                    value={statusValue} // Use the state directly
+                    onChange={(e) => setStatusValue(e.target.value)} // Update statusValue
+                    className="mt-1 p-2 border rounded w-full"
+                >
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Issued">Issued</option>
+                </select>
+
+                <label htmlFor="remark" className="block text-sm font-medium text-gray-700 mt-4">
+                    Remarks (if any)
+                </label>
+                <input
+                    id="remark"
+                    type="text"
+                    className="mt-1 p-2 border rounded w-full"
+                    placeholder="Enter remark here"
+                    onChange={(e) => setRemarks(e.target.value)}
+                    value={remark}
+                />
+            </div>
+        </>
+    }
+    header="Confirm Status Change"
+    icon="pi pi-exclamation-triangle"
+    breakpoints={{ '960px': '75vw', '640px': '90vw' }}
+    footer={
+        <div className="p-dialog-footer flex justify-end gap-2">
+            <Button
+                label="No"
+                icon="pi pi-times"
+                className="p-button-secondary py-2 px-4 rounded-md bg-red-500 text-white inline-flex items-center"
+                onClick={() => setIsDialogVisible(false)}
+            />
+            <Button
+                label="Yes"
+                icon="pi pi-check"
+                className="p-button-danger py-2 px-4 rounded-md bg-green-600 text-white inline-flex items-center"
+                onClick={handleDialogConfirm}
+            />
         </div>
+    }
+/>
+
+</div>
     );
 };
 

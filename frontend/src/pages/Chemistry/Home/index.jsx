@@ -5,6 +5,7 @@ import BreadCrumbs from '../../../components/BreadCrumbs';
 import { toast } from 'sonner';
 import ReportButton from './components/ReportButton';
 
+
 const HomePage = () => {
  
     const { data: dashboardData = {}, error, isLoading } = useGetDashboardDataQuery();
@@ -64,7 +65,7 @@ const HomePage = () => {
                 <div className="cards w-full flex flex-wrap gap-x-16 ml-10">
                     <div className="card w-80 h-56 rounded-md">
                         <h2 className="font-bold text-lg p-1">Urgent Actions</h2>
-                        <div className="bg-rose-100 text-black border-2 border-rose-300 shadow-none h-40 rounded-md p-5">
+                        <div className="bg-yellow-100 text-black border-2 border-yellow-300 shadow-none h-40 rounded-md p-5">
                             <h3 className="m-0">Low Stock Quantity:</h3>
                             <p className="m-0 font-semibold">{lowStockCount}</p>
                             <h3 className="mt-5">Near Expiry Quantity:</h3>
@@ -82,7 +83,7 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="card w-80 h-56 rounded-md">
+                    <div className="card w-72 h-56 rounded-md">
                         <h2 className="font-bold text-lg p-1">Item Details</h2>
                         <div className="bg-emerald-50 text-black border-2 border-emerald-200 shadow-none h-40 rounded-md p-5">
                             <h3 className="m-0">Total Count of All Items:</h3>
@@ -94,7 +95,7 @@ const HomePage = () => {
 
                     <div className="card w-80 h-56 rounded-md">
                         <h2 className="font-bold text-lg p-1">Out of Stock & Expiration</h2>
-                        <div className="bg-yellow-100 text-black border-2 border-yellow-300 shadow-none h-40 rounded-md p-5">
+                        <div className="bg-rose-100 text-black border-2 border-rose-300 shadow-none h-40 rounded-md p-5">
                             <h3 className="m-0">Out of Stock Items:</h3>
                             <p className="m-0 font-semibold">{zeroStockCount}</p>
                             <h3 className="mt-5">Expired Items:</h3>

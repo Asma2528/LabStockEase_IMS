@@ -62,24 +62,26 @@ static getAllRequisitions = CatchAsync(async (req, res) => {
 
 
    // Admin approves a requisition
-static approveRequisition = CatchAsync(async (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body; // Extract the status from the request body
+   static approveRequisition = CatchAsync(async (req, res) => {
+       const { id } = req.params;
+       const { status, remark } = req.body; // Extract status and remark from the request body
+       console.log(req.body);
 
-    // Call the service function with the status
-    const approvedRequisition = await ChemistryRequisitionService.approveRequisition(id, req.user.email, status);
+    // Call the service function with the status and remark
+    const approvedRequisition = await ChemistryRequisitionService.approveRequisition(id, req.user.email, status, remark);
 
     if (!approvedRequisition) {
         return res.status(httpStatus.NOT_FOUND).json({ msg: 'Requisition not found or cannot be approved' });
     }
 
-    return res.status(httpStatus.OK).json({ msg: 'Requisition approved successfully', approvedRequisition });
+    return res.status(httpStatus.OK).json({ msg: 'Requisition updated successfully', approvedRequisition });
 });
+
 
 
    // Chemistry staff retrieves approved and issued requisitions with search functionality
 static getApprovedAndIssuedRequisitions = CatchAsync(async (req, res) => {
-    const { item_name, purpose, date_of_requirement, createdAt, faculty_email,status } = req.query;
+    const { item_name, purpose, date_of_requirement, createdAt, faculty_email,status,remark } = req.query;
 
     // Call service method and pass the search parameters
     const requisitions = await ChemistryRequisitionService.getApprovedAndIssuedRequisitions({
@@ -88,9 +90,11 @@ static getApprovedAndIssuedRequisitions = CatchAsync(async (req, res) => {
         date_of_requirement,
         createdAt,
         faculty_email,
-        status
+        status,
+        remark
     });
 
+    console.log(requisitions);
     return res.status(httpStatus.OK).json({ requisitions });
 });
 

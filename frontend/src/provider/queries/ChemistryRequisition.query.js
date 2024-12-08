@@ -74,17 +74,18 @@ getUserRequisitions: builder.query({
         
 
       // Mutation to approve a requisition
-approveRequisition: builder.mutation({
-    query: ({ id, updateData }) => ({
-        url: `/chemistry-requisition/approve/${id}`,
-        method: 'PATCH',
-        body: updateData, // Ensure this is defined if passing additional data
-        headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('token'),
-        },
+      approveRequisition: builder.mutation({
+        query: ({ id, updateData }) => ({
+            url: `/chemistry-requisition/approve/${id}`,
+            method: 'PATCH',
+            body: updateData,
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            },
+        }),
+        invalidatesTags: ['ChemistryRequisition', 'ApprovedRequisitions'],
     }),
-    invalidatesTags: ['ChemistryRequisition'],
-}),
+    
       // Query to get all approved and issued requisitions for chemistry role
       getApprovedAndIssuedRequisitions: builder.query({
         query: (searchParams) => ({
